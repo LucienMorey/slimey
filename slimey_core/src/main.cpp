@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
 
-#include "ui/window.hpp"
+#include "window.hpp"
 
 int main()
 {
