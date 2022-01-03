@@ -18,3 +18,7 @@ include_directories(${GLAD_INCLUDE_DIR})
 include_directories(${SLIMEY_CORE_INCLUDE_DIR})
 
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} glfw glad)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/resources/shaders" $<TARGET_FILE_DIR:${PROJECT_NAME}>/resources)
