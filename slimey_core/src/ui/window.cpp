@@ -1,4 +1,4 @@
-#include "window.hpp"
+#include "ui/window.hpp"
 
 Window::Window(int width, int height, std::string name, int swapInterval, bool isFullscreen) 
 	: m_winWidth(width), m_winHeight(height)

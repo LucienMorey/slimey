@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
 
-#include "slime_sim.hpp"
+#include "simulation/slime_sim.hpp"
 
 int main()
 {

@@ -8,7 +8,7 @@ set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 
 set (SLIMEY_CORE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-add_executable(${PROJECT_NAME} src/main.cpp src/window.cpp src/slime_sim.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/ui/window.cpp src/simulation/slime_sim.cpp)
 
 find_package(OpenGL REQUIRED)
 # find_package(glfw3 REQUIRED)

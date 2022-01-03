@@ -3,7 +3,12 @@
 
 #include <memory>
 
-#include "window.hpp"
+
+#include "simulation/agent.hpp"
+#include "ui/window.hpp"
+
+
+
 
 class SlimeSim
 {
@@ -11,9 +16,9 @@ public:
   SlimeSim();
   ~SlimeSim();
   void run();
-
 private:
   std::unique_ptr<Window> window;
+
 };
 
 #endif

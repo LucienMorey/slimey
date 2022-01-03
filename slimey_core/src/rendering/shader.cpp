@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 
-#include "shader.hpp"
+#include "rendering/shader.hpp"
 // #include<cerrno>
 
 std::string get_file_contents(const char * filename)
