@@ -13,7 +13,7 @@ const size_t NUM_AGENTS = 1000000;
 SlimeSim::SlimeSim(int win_width, int win_height, int swapInterval, bool isFullscreen)
 {
   agent_generator =
-    std::make_shared<AgentSystem>(win_width, win_height, NUM_AGENTS, 3, PositionMode::CIRCLE);
+    std::make_shared<AgentSystem>(win_width, win_height, NUM_AGENTS, 1, PositionMode::CIRCLE);
 
   window = std::make_shared<Window>(
     win_width, win_height, "Physarum Simulation", swapInterval, isFullscreen);
@@ -25,8 +25,8 @@ SlimeSim::SlimeSim(int win_width, int win_height, int swapInterval, bool isFulls
     "/home/lucien/git/slimey/slimey_core/resources/shaders/main.frag.glsl");
   // m_agentComputeProgram = std::make_shared<ComputeShaderL>(
   //   "/home/lucien/git/slimey/slimey_core/resources/shaders/agent.comp.glsl");
-  m_textureComputeProgram = std::make_shared<ComputeShaderL>(
-    "/home/lucien/git/slimey/slimey_core/resources/shaders/textureProc.comp.glsl");
+  // m_textureComputeProgram = std::make_shared<ComputeShaderL>(
+  //   "/home/lucien/git/slimey/slimey_core/resources/shaders/textureProc.comp.glsl");
 
   const auto agentShaderSrc = physarum::readFile(shader_dir / "agent.comp.glsl");
   if (!agentShaderSrc.has_value()) { throw std::runtime_error("Could not load 'physarum_sim.comp'"); }
@@ -35,6 +35,11 @@ SlimeSim::SlimeSim(int win_width, int win_height, int swapInterval, bool isFulls
 
   agentBuffer = std::make_shared<Buffer>(NUM_AGENTS * sizeof(Agent), nullptr, GL_DYNAMIC_DRAW);
   agentBuffer->setData(agent_generator->getAgents());
+
+  const auto textureShaderSrc = physarum::readFile(shader_dir / "textureProc.comp.glsl");
+  if (!textureShaderSrc.has_value()) { throw std::runtime_error("Could not load 'physarum_sim.comp'"); }
+  textureShader = std::make_shared<Shader>(GL_COMPUTE_SHADER, textureShaderSrc.value());
+  textureComputeProgram = std::make_shared<Program>(textureShader);
 
   // m_agentComputeProgram->useShaderStorageBuffer(
   //   NUM_AGENTS * sizeof(Agent), (void *)&agent_generator->getAgents()[0]);
@@ -68,9 +73,9 @@ void SlimeSim::run()
 
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 
-    m_textureComputeProgram->use();
-    m_textureComputeProgram->setFloat("deltaTime", deltaTime);
-    m_textureComputeProgram->dispatch(groups_x, groups_y, 1);
+    textureComputeProgram->use();
+    textureComputeProgram->set1f("deltaTime", deltaTime);
+    textureComputeProgram->dispatch(groups_x, groups_y,1);
 
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
