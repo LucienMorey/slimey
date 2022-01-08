@@ -17,7 +17,7 @@ public:
   int windowShouldClose() const { return glfwWindowShouldClose(m_win); }
   int getWidth() const { return m_winWidth; }
   int getHeight() const { return m_winHeight; }
-  float getDeltaTime() const { return m_deltaTime; }
+  void getDeltaTime(float& current_time, float& delta_time) const { delta_time = m_deltaTime; current_time = m_current_time; }
 
 private:
   void processInput();
@@ -26,7 +26,7 @@ private:
 
   int m_winWidth, m_winHeight;
 
-  float m_deltaTime = 0.0f, m_prevFrame = 0.0f;
+  float m_deltaTime = 0.0f, m_prevFrame = 0.0f, m_current_time = 0.0f;
 };
 
 #endif

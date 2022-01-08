@@ -31,9 +31,9 @@ Window::~Window()
 
 void Window::use()
 {
-	float currFrame = (float)glfwGetTime();
-	m_deltaTime = currFrame - m_prevFrame;
-	m_prevFrame = currFrame;
+	m_current_time = (float)glfwGetTime();
+	m_deltaTime = m_current_time - m_prevFrame;
+	m_prevFrame = m_current_time;
 
 	processInput();
 }

@@ -8,5 +8,4 @@ void main()
 {
     coords = textureCoords;
     gl_Position = vec4(uvCoords, 0.0, 1.0);
-    
 }
