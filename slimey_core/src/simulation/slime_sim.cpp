@@ -30,18 +30,12 @@ SlimeSim::SlimeSim(int win_width, int win_height, int swapInterval, bool isFulls
   m_agentComputeProgram->useShaderStorageBuffer(
     NUM_AGENTS * sizeof(Agent), (void *)&agent_generator->getAgents()[0]);
 
-  // m_initialTexture = std::make_unique<TextureL>(win_width, win_height, GL_READ_WRITE);
-  // m_processedTexture = std::make_unique<TextureL>(win_width, win_height, GL_WRITE_ONLY);
-  initialTexture = std::make_unique<Texture>(GL_TEXTURE_2D, GL_RGBA32F, 1, win_width, win_height);
 
+  initialTexture = std::make_unique<Texture>(GL_TEXTURE_2D, GL_RGBA32F, 1, win_width, win_height);
   initialTexture->bindImage(0, 0, GL_RGBA32F, GL_READ_WRITE, GL_FALSE, 0);
 
-  // (GLuint unit, GLint level, GLenum format, GLenum access, GLboolean layered, GLint layer)
 
-  // (unit, this->getId(), level, layered, layer, access, format)
-  // glBindImageTexture(0, id, 0, GL_FALSE, 0, access, GL_RGBA32F);
   processedTexture = std::make_unique<Texture>(GL_TEXTURE_2D, GL_RGBA32F, 1, win_width, win_height);
-
   processedTexture->bindImage(0, 0, GL_RGBA32F, GL_WRITE_ONLY, GL_FALSE, 0);
 
   m_quad = std::make_unique<SpriteL>(-1.0f, 1.0f, 1.0f, -1.0f, processedTexture->getId());
