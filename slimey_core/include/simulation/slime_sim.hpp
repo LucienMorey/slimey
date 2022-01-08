@@ -2,13 +2,15 @@
 #define SLIME_SIM_H
 
 #include <geGL/Texture.h>
+#include <geGL/Shader.h>
+#include <geGL/Program.h>
+#include <geGL/Buffer.h>
 
 #include <memory>
 
 #include "rendering/ComputeShaderL.hpp"
 #include "rendering/ShaderL.hpp"
 #include "rendering/SpriteL.hpp"
-#include "rendering/TextureL.hpp"
 #include "simulation/agent.hpp"
 #include "ui/window.hpp"
 
@@ -22,19 +24,24 @@ public:
 private:
   // AgentSystem m_agentSystem;
 
-  std::unique_ptr<Window> window;
-  std::unique_ptr<AgentSystem> agent_generator;
+  std::shared_ptr<Window> window;
+  std::shared_ptr<AgentSystem> agent_generator;
 
-  std::unique_ptr<ShaderL> m_program;
-  std::unique_ptr<ComputeShaderL> m_agentComputeProgram;
-  std::unique_ptr<ComputeShaderL> m_textureComputeProgram;
+  std::shared_ptr<ShaderL> m_program;
+  std::shared_ptr<ComputeShaderL> m_agentComputeProgram;
+  std::shared_ptr<ComputeShaderL> m_textureComputeProgram;
 
-  std::unique_ptr<TextureL> m_initialTexture;
-  std::unique_ptr<TextureL> m_processedTexture;
-  std::unique_ptr<SpriteL> m_quad;
+  std::shared_ptr<SpriteL> m_quad;
 
-  std::unique_ptr<Texture> initialTexture;
-  std::unique_ptr<Texture> processedTexture;
+  std::shared_ptr<Program> agentComputeProgram;
+  std::shared_ptr<Program> textureComputeProgram;
+
+  std::shared_ptr<Shader> agentShader;
+  std::shared_ptr<Shader> textureShader;
+  std::shared_ptr<Buffer> agentBuffer;
+
+  std::shared_ptr<Texture> initialTexture;
+  std::shared_ptr<Texture> processedTexture;
 
   // std::shared_ptr<Buffer> particleBuffer;
   // std::shared_ptr<ShaderL> simulateShader;
@@ -43,7 +50,7 @@ private:
   // std::shared_ptr<Texture> renderTexture;
   // std::shared_ptr<Program> renderTextureProgram;
   // std::shared_ptr<Program> renderQuadProgram;
-  // std::unique_ptr<physarum::PhysarumRenderer> renderer;
+  // std::shared_ptr<physarum::PhysarumRenderer> renderer;
 };
 
 #endif
