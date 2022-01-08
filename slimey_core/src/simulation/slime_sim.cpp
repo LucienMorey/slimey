@@ -20,6 +20,14 @@ SlimeSim::SlimeSim(int win_width, int win_height, int swapInterval, bool isFulls
 
   std::filesystem::path shader_dir = "/home/lucien/git/slimey/slimey_core/resources/shaders/";
 
+  const auto renderVertSrc = readFile(shaderDir / "main.vert.glsl");
+  if (!renderVertSrc.has_value()) { throw std::runtime_error("Could not load 'render.vert'"); }
+  auto renderVertShader = std::make_shared<Shader>(GL_VERTEX_SHADER, renderVertSrc.value());
+  const auto renderFragSrc = readFile(shaderDir / "main.frag.glsl");
+  if (!renderFragSrc.has_value()) { throw std::runtime_error("Could not load 'render.frag'"); }
+  auto renderFragShader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, renderFragSrc.value());
+  renderQuadProgram = std::make_shared<Program>(renderVertShader, renderFragShader);
+
   m_program = std::make_shared<ShaderL>(
     "/home/lucien/git/slimey/slimey_core/resources/shaders/main.vert.glsl",
     "/home/lucien/git/slimey/slimey_core/resources/shaders/main.frag.glsl");

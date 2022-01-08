@@ -35,6 +35,7 @@ private:
 
   std::shared_ptr<Program> agentComputeProgram;
   std::shared_ptr<Program> textureComputeProgram;
+  std::shared_ptr<Program> renderQuadProgram;
 
   std::shared_ptr<Shader> agentShader;
   std::shared_ptr<Shader> textureShader;
