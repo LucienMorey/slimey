@@ -6,9 +6,9 @@
 class TextureL
 {
 public:
-	GLuint id = 0;
-	TextureL(int w, int h, GLenum access);
-	~TextureL() {}
+  GLuint id = 0;
+  TextureL(int w, int h, GLenum access);
+  ~TextureL() {}
 };
 
 #endif

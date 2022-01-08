@@ -1,8 +1,9 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <include/glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <include/glad/glad.h>
+
 #include <iostream>
 
 class Window
@@ -17,7 +18,11 @@ public:
   int windowShouldClose() const { return glfwWindowShouldClose(m_win); }
   int getWidth() const { return m_winWidth; }
   int getHeight() const { return m_winHeight; }
-  void getDeltaTime(float& current_time, float& delta_time) const { delta_time = m_deltaTime; current_time = m_current_time; }
+  void getDeltaTime(float & current_time, float & delta_time) const
+  {
+    delta_time = m_deltaTime;
+    current_time = m_current_time;
+  }
 
 private:
   void processInput();

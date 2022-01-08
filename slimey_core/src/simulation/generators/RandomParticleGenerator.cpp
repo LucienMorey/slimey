@@ -2,11 +2,11 @@
 // Created by xflajs00 on 01.11.2021.
 //
 
+#include "simulation/generators/RandomParticleGenerator.h"
+
 #include <utils/rand.h>
 
 #include <numbers>
-
-#include "simulation/generators/RandomParticleGenerator.h"
 
 namespace physarum
 {

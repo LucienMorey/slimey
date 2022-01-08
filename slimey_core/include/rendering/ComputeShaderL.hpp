@@ -6,15 +6,15 @@
 class ComputeShaderL : public ShaderL
 {
 public:
-	ComputeShaderL() {}
-	ComputeShaderL(const GLchar* computePath);
+  ComputeShaderL() {}
+  ComputeShaderL(const GLchar * computePath);
 
-	void dispatch(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z);
+  void dispatch(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z);
 
-	void useShaderStorageBuffer(GLsizeiptr size, void* data);
+  void useShaderStorageBuffer(GLsizeiptr size, void * data);
 
 private:
-	GLuint m_ssbo = 0;
+  GLuint m_ssbo = 0;
 };
 
 #endif

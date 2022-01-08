@@ -3,14 +3,21 @@
 //
 
 #include "simulation/generators/UniformParticleGenerator.h"
-#include <cmath>
+
 #include <utils/rand.h>
 
-namespace physarum {
+#include <cmath>
 
-UniformParticleGenerator::UniformParticleGenerator(glm::uvec2 imageSize, float step) : size(imageSize), step(step) {}
+namespace physarum
+{
+UniformParticleGenerator::UniformParticleGenerator(glm::uvec2 imageSize, float step)
+: size(imageSize), step(step)
+{
+}
 
-std::vector<Agent> UniformParticleGenerator::generateParticles(std::size_t count, std::uint32_t speciesID) {
+std::vector<Agent> UniformParticleGenerator::generateParticles(
+  std::size_t count, std::uint32_t speciesID)
+{
   auto result = std::vector<Agent>{};
   for (std::size_t i = 0; i < count; ++i) {
     const auto rndAngle = fastRandom(0.f, 1.f) * std::numbers::pi_v<float> * 2.f;
@@ -22,4 +29,4 @@ std::vector<Agent> UniformParticleGenerator::generateParticles(std::size_t count
   }
   return result;
 }
-}// namespace pf::physarum
+}  // namespace physarum

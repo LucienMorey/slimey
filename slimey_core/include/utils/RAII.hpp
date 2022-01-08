@@ -12,23 +12,28 @@
 #include <functional>
 #include <utility>
 
-namespace physarum {
+namespace physarum
+{
 /**
  * @brief Equivalent to try finally.
  */
-class RAII {
- public:
+class RAII
+{
+public:
   /**
    * Construct RAII.
    * @param callable function to be called upon object's destruction
    */
-  explicit RAII(std::invocable auto &&callable) : callable(std::forward<decltype(callable)>(callable)) {}
+  explicit RAII(std::invocable auto && callable)
+  : callable(std::forward<decltype(callable)>(callable))
+  {
+  }
 
   inline ~RAII() { std::invoke(callable); }
 
- private:
+private:
   std::function<void()> callable;
 };
-}// namespace pf
+}  // namespace physarum
 
-#endif//PF_COMMON_RAII_H
+#endif  //PF_COMMON_RAII_H

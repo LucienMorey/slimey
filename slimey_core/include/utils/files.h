@@ -9,15 +9,15 @@
 #include <optional>
 #include <string>
 
-namespace physarum {
-
+namespace physarum
+{
 /**
  * @return absolute path to folder of current executable
  */
 [[nodiscard]] std::filesystem::path getExeFolder();
 
-[[nodiscard]] std::optional<std::string> readFile(const std::filesystem::path &path);
+[[nodiscard]] std::optional<std::string> readFile(const std::filesystem::path & path);
 
-}// namespace pf
+}  // namespace physarum
 
-#endif//OPENGL_TEMPLATE_SRC_UTILS_FILES_H
+#endif  //OPENGL_TEMPLATE_SRC_UTILS_FILES_H

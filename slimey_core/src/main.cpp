@@ -1,7 +1,9 @@
+#include <stdio.h>
+#include <unistd.h>
+
 #include <iostream>
 #include <memory>
-#include <unistd.h>
-#include <stdio.h>
+
 #include "simulation/slime_sim.hpp"
 
 int main()

@@ -3,16 +3,22 @@
 //
 
 #include "simulation/generators/InwardCircleParticleGenerator.h"
-#include <cmath>
-#include <glm/geometric.hpp>
+
 #include <utils/rand.h>
+
+#include <cmath>
 #include <glm/common.hpp>
+#include <glm/geometric.hpp>
 
-namespace physarum {
+namespace physarum
+{
+InwardCircleParticleGenerator::InwardCircleParticleGenerator(const glm::ivec2 & size) : size(size)
+{
+}
 
-InwardCircleParticleGenerator::InwardCircleParticleGenerator(const glm::ivec2 &size) : size(size) {}
-
-std::vector<Agent> physarum::InwardCircleParticleGenerator::generateParticles(std::size_t count, std::uint32_t speciesID) {
+std::vector<Agent> physarum::InwardCircleParticleGenerator::generateParticles(
+  std::size_t count, std::uint32_t speciesID)
+{
   auto result = std::vector<Agent>{};
   const auto center = glm::vec2{size / 2};
   const auto radius = glm::min(static_cast<float>(size.x), static_cast<float>(size.y)) * 0.4f;
@@ -25,4 +31,4 @@ std::vector<Agent> physarum::InwardCircleParticleGenerator::generateParticles(st
   return result;
 }
 
-}// namespace pf::physarum
+}  // namespace physarum

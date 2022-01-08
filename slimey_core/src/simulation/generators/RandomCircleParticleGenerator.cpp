@@ -3,14 +3,20 @@
 //
 
 #include "simulation/generators/RandomCircleParticleGenerator.h"
+
 #include <utils/rand.h>
+
 #include <glm/common.hpp>
 
-namespace physarum {
+namespace physarum
+{
+RandomCircleParticleGenerator::RandomCircleParticleGenerator(const glm::ivec2 & size) : size(size)
+{
+}
 
-RandomCircleParticleGenerator::RandomCircleParticleGenerator(const glm::ivec2 &size) : size(size) {}
-
-std::vector<Agent> RandomCircleParticleGenerator::generateParticles(std::size_t count, std::uint32_t speciesID) {
+std::vector<Agent> RandomCircleParticleGenerator::generateParticles(
+  std::size_t count, std::uint32_t speciesID)
+{
   auto result = std::vector<Agent>{};
   const auto center = glm::vec2{size / 2};
   const auto radius = glm::min(static_cast<float>(size.x), static_cast<float>(size.y)) * 0.4f;
@@ -22,4 +28,4 @@ std::vector<Agent> RandomCircleParticleGenerator::generateParticles(std::size_t 
   return result;
 }
 
-}// namespace pf::physarum
+}  // namespace physarum

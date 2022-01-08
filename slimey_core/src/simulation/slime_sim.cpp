@@ -1,11 +1,11 @@
 
 
+#include "simulation/slime_sim.hpp"
+
 #include <utils/files.h>
 
 #include <chrono>
 #include <vector>
-
-#include "simulation/slime_sim.hpp"
 
 const size_t NUM_AGENTS = 2000000;
 
@@ -30,10 +30,8 @@ SlimeSim::SlimeSim(int win_width, int win_height, int swapInterval, bool isFulls
   m_agentComputeProgram->useShaderStorageBuffer(
     NUM_AGENTS * sizeof(Agent), (void *)&agent_generator->getAgents()[0]);
 
-
   initialTexture = std::make_unique<Texture>(GL_TEXTURE_2D, GL_RGBA32F, 1, win_width, win_height);
   initialTexture->bindImage(0, 0, GL_RGBA32F, GL_READ_WRITE, GL_FALSE, 0);
-
 
   processedTexture = std::make_unique<Texture>(GL_TEXTURE_2D, GL_RGBA32F, 1, win_width, win_height);
   processedTexture->bindImage(0, 0, GL_RGBA32F, GL_WRITE_ONLY, GL_FALSE, 0);
