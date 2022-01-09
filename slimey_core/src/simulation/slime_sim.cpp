@@ -20,21 +20,13 @@ SlimeSim::SlimeSim(int win_width, int win_height, int swapInterval, bool isFulls
 
   std::filesystem::path shader_dir = "/home/lucien/git/slimey/slimey_core/resources/shaders/";
 
-  const auto renderVertSrc = readFile(shaderDir / "main.vert.glsl");
+  const auto renderVertSrc = physarum::readFile(shader_dir / "main.vert.glsl");
   if (!renderVertSrc.has_value()) { throw std::runtime_error("Could not load 'render.vert'"); }
   auto renderVertShader = std::make_shared<Shader>(GL_VERTEX_SHADER, renderVertSrc.value());
-  const auto renderFragSrc = readFile(shaderDir / "main.frag.glsl");
+  const auto renderFragSrc = physarum::readFile(shader_dir / "main.frag.glsl");
   if (!renderFragSrc.has_value()) { throw std::runtime_error("Could not load 'render.frag'"); }
   auto renderFragShader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, renderFragSrc.value());
   renderQuadProgram = std::make_shared<Program>(renderVertShader, renderFragShader);
-
-  m_program = std::make_shared<ShaderL>(
-    "/home/lucien/git/slimey/slimey_core/resources/shaders/main.vert.glsl",
-    "/home/lucien/git/slimey/slimey_core/resources/shaders/main.frag.glsl");
-  // m_agentComputeProgram = std::make_shared<ComputeShaderL>(
-  //   "/home/lucien/git/slimey/slimey_core/resources/shaders/agent.comp.glsl");
-  // m_textureComputeProgram = std::make_shared<ComputeShaderL>(
-  //   "/home/lucien/git/slimey/slimey_core/resources/shaders/textureProc.comp.glsl");
 
   const auto agentShaderSrc = physarum::readFile(shader_dir / "agent.comp.glsl");
   if (!agentShaderSrc.has_value()) { throw std::runtime_error("Could not load 'physarum_sim.comp'"); }
@@ -48,9 +40,6 @@ SlimeSim::SlimeSim(int win_width, int win_height, int swapInterval, bool isFulls
   if (!textureShaderSrc.has_value()) { throw std::runtime_error("Could not load 'physarum_sim.comp'"); }
   textureShader = std::make_shared<Shader>(GL_COMPUTE_SHADER, textureShaderSrc.value());
   textureComputeProgram = std::make_shared<Program>(textureShader);
-
-  // m_agentComputeProgram->useShaderStorageBuffer(
-  //   NUM_AGENTS * sizeof(Agent), (void *)&agent_generator->getAgents()[0]);
 
   initialTexture = std::make_shared<Texture>(GL_TEXTURE_2D, GL_RGBA32F, 1, win_width, win_height);
   initialTexture->bindImage(0, 0, GL_RGBA32F, GL_READ_WRITE, GL_FALSE, 0);
@@ -90,7 +79,7 @@ void SlimeSim::run()
     glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    m_program->use();
+    renderQuadProgram->use();
     m_quad->draw();
 
     window->unuse();
