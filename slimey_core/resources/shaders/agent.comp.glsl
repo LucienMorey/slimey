@@ -80,19 +80,19 @@ void main()
         // position.y = min(imgSize.y - 0.01, max(0, position.y));
         if (position.x < 0)
         {
-            position.x = imgSize.x - 10;
+            position.x = imgSize.x - 1;
         }
         if (position.x > imgSize.x)
         {
-            position.x = 10;
+            position.x = 1;
         }
         if (position.y < 0)
         {
-            position.y = imgSize.y - 10;
+            position.y = imgSize.y - 1;
         }
         if (position.y > imgSize.y)
         {
-            position.y = 10;
+            position.y = 1;
         }
         // agents[i].angle = scaleRantomTo01(random) * TWO_PI;
     }
@@ -106,7 +106,7 @@ void main()
     float weightLeft = sense(currAgent, sensorAngleSpacing, speciesMask);
     float weightRight = sense(currAgent, -sensorAngleSpacing, speciesMask);
 
-    float randomSteerStrength = 0.1; //scaleRantomTo01(random);
+    float randomSteerStrength = scaleRantomTo01(random);
 
     if (weightForward > weightLeft && weightForward > weightRight) {}
 

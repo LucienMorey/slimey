@@ -8,8 +8,7 @@
 
 #include <memory>
 
-#include "rendering/ComputeShaderL.hpp"
-#include "rendering/ShaderL.hpp"
+
 #include "rendering/SpriteL.hpp"
 #include "simulation/agent.hpp"
 #include "ui/window.hpp"
