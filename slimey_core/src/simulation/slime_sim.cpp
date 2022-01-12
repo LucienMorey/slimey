@@ -46,6 +46,8 @@ SlimeSim::SlimeSim(int win_width, int win_height, int swapInterval, bool isFulls
 
   processedTexture = std::make_shared<Texture>(GL_TEXTURE_2D, GL_RGBA32F, 1, win_width, win_height);
   processedTexture->bindImage(0, 0, GL_RGBA32F, GL_WRITE_ONLY, GL_FALSE, 0);
+  processedTexture->texParameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  processedTexture->texParameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
   m_quad = std::make_shared<SpriteL>(-1.0f, 1.0f, 1.0f, -1.0f, processedTexture->getId());
 }
