@@ -1,15 +1,12 @@
 #ifndef SLIME_SIM_H
 #define SLIME_SIM_H
 
-#include <geGL/Texture.h>
-#include <geGL/Shader.h>
 #include <geGL/Program.h>
-#include <geGL/Buffer.h>
+#include <geGL/Shader.h>
 
 #include <memory>
 
-
-#include "rendering/SpriteL.hpp"
+#include "rendering/slime_renderer.hpp"
 #include "simulation/agent.hpp"
 #include "ui/window.hpp"
 
@@ -21,22 +18,14 @@ public:
   void run();
 
 private:
-
   std::shared_ptr<Window> window;
   std::shared_ptr<AgentSystem> agent_generator;
 
-  std::shared_ptr<SpriteL> m_quad;
-
   std::shared_ptr<Program> agentComputeProgram;
-  std::shared_ptr<Program> textureComputeProgram;
-  std::shared_ptr<Program> renderQuadProgram;
-
   std::shared_ptr<Shader> agentShader;
-  std::shared_ptr<Shader> textureShader;
   std::shared_ptr<Buffer> agentBuffer;
 
-  std::shared_ptr<Texture> initialTexture;
-  std::shared_ptr<Texture> processedTexture;
+  std::shared_ptr<SlimeRenderer> renderer;
 };
 
 #endif
