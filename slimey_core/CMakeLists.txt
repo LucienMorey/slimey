@@ -14,6 +14,7 @@ add_executable(${PROJECT_NAME}
         src/main.cpp
         src/ui/window.cpp
         src/simulation/slime_sim.cpp
+        src/simulation/slimey.cpp
         # src/simulation/agent.cpp
         # src/simulation/PhysarumSimulator.cpp
         # src/simulation/generators/UniformParticleGenerator.cpp
