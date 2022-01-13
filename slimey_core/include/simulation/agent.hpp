@@ -1,6 +1,8 @@
 #pragma once
 #include <algorithm>
+#include <chrono>
 #include <glm/vec4.hpp>
+#include <iostream>
 #include <random>
 #include <vector>
 
@@ -13,7 +15,13 @@ struct Agent
   int32_t speciesMask;
 };
 
-enum class PositionMode { RANDOM, CIRCLE, CENTER, INWARD_CIRCLE };
+enum class PositionMode
+{
+  RANDOM,
+  CIRCLE,
+  CENTER,
+  INWARD_CIRCLE
+};
 
 class AgentSystem
 {
@@ -29,7 +37,9 @@ public:
     else if (numSpecies < -1)
       numSpecies = -1;
 
-    std::mt19937 randGen;
+    std::default_random_engine randGen(std::chrono::duration_cast<std::chrono::nanoseconds>(
+                                         std::chrono::system_clock::now().time_since_epoch())
+                                         .count());
     // std::uniform_real_distribution<float> position_x(0.0f, (float)width);
     // std::uniform_real_distribution<float> position_y(0.0f, (float)height);
     std::uniform_real_distribution<float> angleDistribution(0.0f, TWO_PI);
@@ -41,12 +51,18 @@ public:
 
     m_agents.resize(m_numAgents);
 
-    for (int i = 0; i < m_agents.size(); i++) {
+    for (int i = 0; i < m_agents.size(); i++)
+    {
       float pos_x, pos_y;
       float ang = angleDistribution(randGen);
-      switch (posMode) {
+      switch (posMode)
+      {
         case (PositionMode::CIRCLE): {
-          float rad = distribution(randGen) * height * 0.15f;
+          float rad = distribution(randGen) * height * 0.3;
+          if (rad > 540)
+          {
+            std::cout << rad << std::endl;
+          }
           float circle_ang = angleDistribution(randGen);
           pos_x = centre_x + rad * cos(circle_ang);
           pos_y = centre_y + rad * sin(circle_ang);
@@ -62,11 +78,11 @@ public:
           pos_y = distribution(randGen) * height;
         }
         case (PositionMode::INWARD_CIRCLE): {
-          float rad = distribution(randGen) * height * 0.15f;
+          float rad = distribution(randGen) * height * 0.3;
           float circle_ang = angleDistribution(randGen);
-          pos_y = centre_y + rad *sin(circle_ang);
-          pos_x = centre_x + rad *cos(circle_ang);
-          ang = atan2(pos_y-centre_y,pos_x -centre_x);
+          pos_y = centre_y + rad * sin(circle_ang);
+          pos_x = centre_x + rad * cos(circle_ang);
+          ang = atan2(pos_y - centre_y, pos_x - centre_x);
         }
       }
 
