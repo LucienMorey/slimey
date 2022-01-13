@@ -6,12 +6,13 @@ const PositionMode POS_MODE = PositionMode::CIRCLE;
 
 const int NUM_SPECIES = 1;
 
+const std::filesystem::path shader_dir = "/home/lucien/git/slimey/slimey_core/resources/shaders/";
+
 Slimey::Slimey(int win_width, int win_height, int swapInterval, bool isFullscreen = false)
 {
+  // create slime window
   window = std::make_shared<Window>(
     win_width, win_height, "Physarum Simulation", swapInterval, isFullscreen);
-
-  std::filesystem::path shader_dir = "/home/lucien/git/slimey/slimey_core/resources/shaders/";
 
   // create simulator shader
   sim = std::make_shared<SlimeSim>(
@@ -25,12 +26,16 @@ Slimey::~Slimey() {}
 
 void Slimey::run()
 {
+  // simulate until window is told to close
   while (!window->windowShouldClose()) {
     window->use();
+    // get time between frames
     float deltaTime = window->getDeltaTime();
 
+    // sim slime movement over delta time
     sim->simulate(deltaTime);
 
+    // render slime agents
     renderer->render(deltaTime);
 
     window->unuse();
