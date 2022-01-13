@@ -38,5 +38,5 @@ void SlimeSim::simulate(float delta_time)
   agentBuffer->bindBase(GL_SHADER_STORAGE_BUFFER, 2);
   agentComputeProgram->dispatch(num_agents_ / 64 + 1, 1, 1);
 
-  glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
+  glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 }
