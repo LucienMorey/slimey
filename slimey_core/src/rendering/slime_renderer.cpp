@@ -55,18 +55,12 @@ void SlimeRenderer::init() {}
 
 void SlimeRenderer::render(float delta_time)
 {
-  GLuint groups_a = num_agents_ / 64;
-  GLuint groups_x = width_ / 8;
-  GLuint groups_y = height_ / 8;
 
   textureComputeProgram->use();
   textureComputeProgram->set1f("deltaTime", delta_time);
-  textureComputeProgram->dispatch(groups_x, groups_y, 1);
+  textureComputeProgram->dispatch(width_ / 8, height_ / 8);
 
-  glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
-  glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
   renderQuadProgram->use();
   quadVAO->bind();
