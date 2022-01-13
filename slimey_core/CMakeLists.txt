@@ -21,7 +21,6 @@ add_executable(${PROJECT_NAME}
         # src/simulation/generators/PointParticleGenerator.cpp
         # src/simulation/generators/RandomCircleParticleGenerator.cpp
         # src/simulation/generators/RandomParticleGenerator.cpp
-        src/rendering/SpriteL.cpp
         src/rendering/slime_renderer.cpp
         src/utils/files.cpp
         )

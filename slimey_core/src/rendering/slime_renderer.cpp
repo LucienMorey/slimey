@@ -33,7 +33,20 @@ SlimeRenderer::SlimeRenderer(
   processedTexture->texParameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   processedTexture->texParameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-  m_quad = std::make_shared<SpriteL>(-1.0f, 1.0f, 1.0f, -1.0f, processedTexture->getId());
+  const std::vector<float> quadVertices{
+      -1.0f, 1.0f, 0.0f,
+      0.0f, 0.0f,
+      -1.0f, -1.0f, 0.0f,
+      0.0f, 1.0f,
+      1.0f,  1.0f, 0.0f,
+      1.0f, 0.0f,
+      1.0f,  -1.0f, 0.0f,
+      1.0f, 1.0f,
+  };
+  quadVBO = std::make_shared<Buffer>(sizeof(float) * quadVertices.size(), quadVertices.data());
+  quadVAO = std::make_shared<VertexArray>();
+  quadVAO->addAttrib(quadVBO, 0, 3, GL_FLOAT, 5 * sizeof(float), 0);
+  quadVAO->addAttrib(quadVBO, 1, 2, GL_FLOAT, 5 * sizeof(float), (3 * sizeof(float)));
 }
 
 SlimeRenderer::~SlimeRenderer() {}
@@ -56,5 +69,7 @@ void SlimeRenderer::render(float delta_time)
   glClear(GL_COLOR_BUFFER_BIT);
 
   renderQuadProgram->use();
-  m_quad->draw();
+  quadVAO->bind();
+  processedTexture->bind(0);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }

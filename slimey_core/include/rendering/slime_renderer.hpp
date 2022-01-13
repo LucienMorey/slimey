@@ -7,8 +7,7 @@
 #include <geGL/Program.h>
 #include <geGL/Shader.h>
 #include <geGL/Texture.h>
-
-#include "rendering/SpriteL.hpp"
+#include <geGL/VertexArray.h>
 
 class SlimeRenderer
 {
@@ -26,8 +25,6 @@ private:
   int height_;
   std::filesystem::path shader_dir_;
 
-  std::shared_ptr<SpriteL> m_quad;
-
   std::shared_ptr<Program> textureComputeProgram;
   std::shared_ptr<Program> renderQuadProgram;
 
@@ -35,6 +32,9 @@ private:
 
   std::shared_ptr<Texture> initialTexture;
   std::shared_ptr<Texture> processedTexture;
+
+  std::shared_ptr<Buffer> quadVBO;
+  std::shared_ptr<VertexArray> quadVAO;
 };
 
 #endif
