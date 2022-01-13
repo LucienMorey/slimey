@@ -27,7 +27,8 @@ Slimey::~Slimey() {}
 void Slimey::run()
 {
   // simulate until window is told to close
-  while (!window->windowShouldClose()) {
+  while (!window->windowShouldClose())
+  {
     window->use();
     // get time between frames
     float deltaTime = window->getDeltaTime();

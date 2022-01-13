@@ -19,7 +19,8 @@ SlimeSim::SlimeSim(
 
   // create simulation compute shader
   const auto agentShaderSrc = physarum::readFile(shader_dir / "agent.comp.glsl");
-  if (!agentShaderSrc.has_value()) {
+  if (!agentShaderSrc.has_value())
+  {
     throw std::runtime_error("Could not load 'agent.comp.glsl'");
   }
   agentShader = std::make_shared<Shader>(GL_COMPUTE_SHADER, agentShaderSrc.value());
