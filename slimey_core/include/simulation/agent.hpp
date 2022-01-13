@@ -13,7 +13,7 @@ struct Agent
   int32_t speciesMask;
 };
 
-enum class PositionMode { RANDOM, CIRCLE, CENTER };
+enum class PositionMode { RANDOM, CIRCLE, CENTER, INWARD_CIRCLE };
 
 class AgentSystem
 {
@@ -60,6 +60,13 @@ public:
         case (PositionMode::RANDOM): {
           pos_x = distribution(randGen) * width;
           pos_y = distribution(randGen) * height;
+        }
+        case (PositionMode::INWARD_CIRCLE): {
+          float rad = distribution(randGen) * height * 0.15f;
+          float circle_ang = angleDistribution(randGen);
+          pos_y = centre_y + rad *sin(circle_ang);
+          pos_x = centre_x + rad *cos(circle_ang);
+          ang = atan2(pos_y-centre_y,pos_x -centre_x);
         }
       }
 
