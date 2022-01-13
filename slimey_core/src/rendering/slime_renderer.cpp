@@ -6,20 +6,25 @@ SlimeRenderer::SlimeRenderer(
   int width, int height, std::filesystem::path shader_dir, size_t num_agents)
 : num_agents_(num_agents), width_(width), height_(height), shader_dir_(shader_dir)
 {
+  // read vertex and frag shaders and bind them
   const auto renderVertSrc = physarum::readFile(shader_dir_ / "main.vert.glsl");
-  if (!renderVertSrc.has_value()) {
+  if (!renderVertSrc.has_value())
+  {
     throw std::runtime_error("Could not load 'render.vert'");
   }
   auto renderVertShader = std::make_shared<Shader>(GL_VERTEX_SHADER, renderVertSrc.value());
   const auto renderFragSrc = physarum::readFile(shader_dir_ / "main.frag.glsl");
-  if (!renderFragSrc.has_value()) {
+  if (!renderFragSrc.has_value())
+  {
     throw std::runtime_error("Could not load 'render.frag'");
   }
   auto renderFragShader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, renderFragSrc.value());
   renderQuadProgram = std::make_shared<Program>(renderVertShader, renderFragShader);
 
+  // initialise compute shader
   const auto textureShaderSrc = physarum::readFile(shader_dir_ / "textureProc.comp.glsl");
-  if (!textureShaderSrc.has_value()) {
+  if (!textureShaderSrc.has_value())
+  {
     throw std::runtime_error("Could not load 'physarum_sim.comp'");
   }
   textureShader = std::make_shared<Shader>(GL_COMPUTE_SHADER, textureShaderSrc.value());
@@ -33,15 +38,10 @@ SlimeRenderer::SlimeRenderer(
   processedTexture->texParameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   processedTexture->texParameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
+  // initialise rendedring vertices
   const std::vector<float> quadVertices{
-      -1.0f, 1.0f, 0.0f,
-      0.0f, 0.0f,
-      -1.0f, -1.0f, 0.0f,
-      0.0f, 1.0f,
-      1.0f,  1.0f, 0.0f,
-      1.0f, 0.0f,
-      1.0f,  -1.0f, 0.0f,
-      1.0f, 1.0f,
+    -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+    1.0f,  1.0f, 0.0f, 1.0f, 0.0f, 1.0f,  -1.0f, 0.0f, 1.0f, 1.0f,
   };
   quadVBO = std::make_shared<Buffer>(sizeof(float) * quadVertices.size(), quadVertices.data());
   quadVAO = std::make_shared<VertexArray>();
@@ -55,13 +55,15 @@ void SlimeRenderer::init() {}
 
 void SlimeRenderer::render(float delta_time)
 {
-
+  //bind texture program for rendering
   textureComputeProgram->use();
   textureComputeProgram->set1f("deltaTime", delta_time);
   textureComputeProgram->dispatch(width_ / 8, height_ / 8);
 
+  //wait for compute shader to be complete
   glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
+  //draw vertecies
   renderQuadProgram->use();
   quadVAO->bind();
   processedTexture->bind(0);

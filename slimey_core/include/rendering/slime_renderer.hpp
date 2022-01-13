@@ -1,18 +1,18 @@
 #ifndef SLIME_RENDERER_H
 #define SLIME_RENDERER_H
 
-#include <filesystem>
-
 #include <geGL/Buffer.h>
 #include <geGL/Program.h>
 #include <geGL/Shader.h>
 #include <geGL/Texture.h>
 #include <geGL/VertexArray.h>
 
+#include <filesystem>
+
 class SlimeRenderer
 {
 public:
-  SlimeRenderer(int width, int height,std::filesystem::path shader_dir, size_t num_agents);
+  SlimeRenderer(int width, int height, std::filesystem::path shader_dir, size_t num_agents);
   ~SlimeRenderer();
 
   void init();
