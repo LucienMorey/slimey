@@ -14,7 +14,7 @@ SlimeSim::SlimeSim(
 : num_agents_(num_agents)
 {
   agent_generator =
-    std::make_shared<AgentSystem>(win_width, win_height, num_agents_, 1, PositionMode::CIRCLE);
+    std::make_shared<AgentSystem>(win_width, win_height, num_agents_, num_species, pos_mode);
 
   const auto agentShaderSrc = physarum::readFile(shader_dir / "agent.comp.glsl");
   if (!agentShaderSrc.has_value()) {
