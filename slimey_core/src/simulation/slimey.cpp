@@ -13,9 +13,11 @@ Slimey::Slimey(int win_width, int win_height, int swapInterval, bool isFullscree
 
   std::filesystem::path shader_dir = "/home/lucien/git/slimey/slimey_core/resources/shaders/";
 
+  // create simulator shader
   sim = std::make_shared<SlimeSim>(
     win_width, win_height, shader_dir, NUM_AGENTS, NUM_SPECIES, POS_MODE);
 
+  // create rendering shader
   renderer = std::make_shared<SlimeRenderer>(win_width, win_height, shader_dir, NUM_AGENTS);
 }
 
@@ -25,8 +27,7 @@ void Slimey::run()
 {
   while (!window->windowShouldClose()) {
     window->use();
-    float deltaTime, currentTime;
-    window->getDeltaTime(currentTime, deltaTime);
+    float deltaTime = window->getDeltaTime();
 
     sim->simulate(deltaTime);
 

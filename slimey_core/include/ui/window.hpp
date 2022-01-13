@@ -20,10 +20,9 @@ public:
   int windowShouldClose() const { return glfwWindowShouldClose(m_win); }
   int getWidth() const { return m_winWidth; }
   int getHeight() const { return m_winHeight; }
-  void getDeltaTime(float & current_time, float & delta_time) const
+  float getDeltaTime() const
   {
-    delta_time = m_deltaTime;
-    current_time = m_current_time;
+    return m_deltaTime;
   }
 
 private:
