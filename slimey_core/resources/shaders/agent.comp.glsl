@@ -4,7 +4,7 @@
 
 struct Agent
 {
-    float x, y;
+    vec2 position;
     float angle;
     int speciesMask;
 };
@@ -46,7 +46,7 @@ float sense(Agent agent, float sensorAngleOffset, vec4 speciesMask)
 {
     float sensorAngle = agent.angle + sensorAngleOffset;
     vec2 sensorDir = vec2(cos(sensorAngle), sin(sensorAngle));
-    ivec2 sensorCenter = ivec2(vec2(agent.x, agent.y) + sensorDir * sensorOffsetDst);
+    ivec2 sensorCenter = ivec2(agent.position + sensorDir * sensorOffsetDst);
     float sum = 0.0;
 
     for (int x_off = -sensorSize; x_off <= sensorSize; x_off++)
@@ -64,10 +64,10 @@ void main()
 {
     uint i = gl_GlobalInvocationID.x;
     Agent currAgent = agents[i];
+    vec2 position = currAgent.position;
+    uint random = hash(uint(position.y * imgSize.y + position.x + hash(i)));
 
-    uint random = hash(uint(currAgent.y * imgSize.y + currAgent.x + hash(i)));
-
-    vec2 position = vec2(currAgent.x, currAgent.y);
+    
     vec2 direction = vec2(cos(currAgent.angle), sin(currAgent.angle));
 
     position += direction * agentSpeed * deltaTime;
@@ -120,8 +120,7 @@ void main()
         agents[i].angle += randomSteerStrength * turnSpeed * deltaTime;
 
 
-    agents[i].x = position.x;
-    agents[i].y = position.y;
+    agents[i].position = position;
 
     imageStore(imgOutput, ivec2(position), speciesMask);
 }

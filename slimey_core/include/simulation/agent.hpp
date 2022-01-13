@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <chrono>
 #include <glm/vec4.hpp>
+#include <glm/vec2.hpp>
 #include <iostream>
 #include <random>
 #include <vector>
@@ -10,7 +11,7 @@ constexpr float TWO_PI = 6.2831853f;
 
 struct Agent
 {
-  float x, y;
+  glm::vec2 position;
   float angle;
   int32_t speciesMask;
 };
@@ -53,7 +54,7 @@ public:
 
     for (int i = 0; i < m_agents.size(); i++)
     {
-      float pos_x, pos_y;
+      glm::vec2 position;
       float ang = angleDistribution(randGen);
       switch (posMode)
       {
@@ -64,29 +65,29 @@ public:
             std::cout << rad << std::endl;
           }
           float circle_ang = angleDistribution(randGen);
-          pos_x = centre_x + rad * cos(circle_ang);
-          pos_y = centre_y + rad * sin(circle_ang);
+          position.x = centre_x + rad * cos(circle_ang);
+          position.y = centre_y + rad * sin(circle_ang);
           break;
         }
         case (PositionMode::CENTER): {
-          pos_x = centre_x;
-          pos_y = centre_y;
+          position.x = centre_x;
+          position.y = centre_y;
           break;
         }
         case (PositionMode::RANDOM): {
-          pos_x = distribution(randGen) * width;
-          pos_y = distribution(randGen) * height;
+          position.x = distribution(randGen) * width;
+          position.y = distribution(randGen) * height;
         }
         case (PositionMode::INWARD_CIRCLE): {
           float rad = distribution(randGen) * height * 0.3;
           float circle_ang = angleDistribution(randGen);
-          pos_y = centre_y + rad * sin(circle_ang);
-          pos_x = centre_x + rad * cos(circle_ang);
-          ang = atan2(pos_y - centre_y, pos_x - centre_x);
+          position.y = centre_y + rad * sin(circle_ang);
+          position.x = centre_x + rad * cos(circle_ang);
+          ang = atan2(position.y - centre_y, position.x - centre_x);
         }
       }
 
-      m_agents.at(i) = {pos_x, pos_y, ang, (numSpecies < 2) ? -1 : species(randGen)};
+      m_agents.at(i) = {position, ang, (numSpecies < 2) ? -1 : species(randGen)};
     }
   }
 
