@@ -15,7 +15,7 @@ SlimeSim::SlimeSim(
 {
   // generate agents
   agent_generator =
-    std::make_shared<AgentSystem>(win_width, win_height, num_agents_, num_species, pos_mode);
+    std::make_unique<AgentSystem>(win_width, win_height, num_agents_, num_species, pos_mode);
 
   // create simulation compute shader
   const auto agentShaderSrc = physarum::readFile(shader_dir / "agent.comp.glsl");
@@ -24,7 +24,7 @@ SlimeSim::SlimeSim(
     throw std::runtime_error("Could not load 'agent.comp.glsl'");
   }
   agentShader = std::make_shared<Shader>(GL_COMPUTE_SHADER, agentShaderSrc.value());
-  agentComputeProgram = std::make_shared<Program>(agentShader);
+  agentComputeProgram = std::make_unique<Program>(agentShader);
 
   // bind  agent buffer to the simulation
   agentBuffer = std::make_shared<Buffer>(num_agents_ * sizeof(Agent), nullptr, GL_DYNAMIC_DRAW);

@@ -25,13 +25,13 @@ private:
   int height_;
   std::filesystem::path shader_dir_;
 
-  std::shared_ptr<Program> textureComputeProgram;
-  std::shared_ptr<Program> renderQuadProgram;
+  std::unique_ptr<Program> textureComputeProgram;
+  std::unique_ptr<Program> renderQuadProgram;
 
   std::shared_ptr<Shader> textureShader;
 
-  std::shared_ptr<Texture> initialTexture;
-  std::shared_ptr<Texture> processedTexture;
+  std::unique_ptr<Texture> initialTexture;
+  std::unique_ptr<Texture> processedTexture;
 
   std::shared_ptr<Buffer> quadVBO;
   std::shared_ptr<VertexArray> quadVAO;

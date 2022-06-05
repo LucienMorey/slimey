@@ -23,9 +23,9 @@ public:
 private:
   size_t num_agents_;
 
-  std::shared_ptr<AgentSystem> agent_generator;
+  std::unique_ptr<AgentSystem> agent_generator;
 
-  std::shared_ptr<Program> agentComputeProgram;
+  std::unique_ptr<Program> agentComputeProgram;
   std::shared_ptr<Shader> agentShader;
   std::shared_ptr<Buffer> agentBuffer;
 };

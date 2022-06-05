@@ -14,10 +14,10 @@ class Slimey{
     void run();
 
   private:
-    std::shared_ptr<Window> window;
+    std::unique_ptr<Window> window;
 
-    std::shared_ptr<SlimeRenderer> renderer;
-    std::shared_ptr<SlimeSim> sim;
+    std::unique_ptr<SlimeRenderer> renderer;
+    std::unique_ptr<SlimeSim> sim;
 };
 
 #endif

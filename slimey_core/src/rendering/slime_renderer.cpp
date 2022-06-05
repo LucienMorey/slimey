@@ -19,7 +19,7 @@ SlimeRenderer::SlimeRenderer(
     throw std::runtime_error("Could not load 'render.frag'");
   }
   auto renderFragShader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, renderFragSrc.value());
-  renderQuadProgram = std::make_shared<Program>(renderVertShader, renderFragShader);
+  renderQuadProgram = std::make_unique<Program>(renderVertShader, renderFragShader);
 
   // initialise compute shader
   const auto textureShaderSrc = physarum::readFile(shader_dir_ / "textureProc.comp.glsl");
@@ -28,12 +28,12 @@ SlimeRenderer::SlimeRenderer(
     throw std::runtime_error("Could not load 'physarum_sim.comp'");
   }
   textureShader = std::make_shared<Shader>(GL_COMPUTE_SHADER, textureShaderSrc.value());
-  textureComputeProgram = std::make_shared<Program>(textureShader);
+  textureComputeProgram = std::make_unique<Program>(textureShader);
 
-  initialTexture = std::make_shared<Texture>(GL_TEXTURE_2D, GL_RGBA32F, 1, width_, height_);
+  initialTexture = std::make_unique<Texture>(GL_TEXTURE_2D, GL_RGBA32F, 1, width_, height_);
   initialTexture->bindImage(0, 0, GL_RGBA32F, GL_READ_WRITE, GL_FALSE, 0);
 
-  processedTexture = std::make_shared<Texture>(GL_TEXTURE_2D, GL_RGBA32F, 1, width_, height_);
+  processedTexture = std::make_unique<Texture>(GL_TEXTURE_2D, GL_RGBA32F, 1, width_, height_);
   processedTexture->bindImage(0, 0, GL_RGBA32F, GL_WRITE_ONLY, GL_FALSE, 0);
   processedTexture->texParameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   processedTexture->texParameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);

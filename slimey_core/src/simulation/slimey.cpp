@@ -4,22 +4,22 @@ const size_t NUM_AGENTS = 1000000;
 
 const PositionMode POS_MODE = PositionMode::CIRCLE;
 
-const int NUM_SPECIES = 1;
+const int NUM_SPECIES = 3;
 
 const std::filesystem::path shader_dir = "/home/lucien/git/slimey/slimey_core/resources/shaders/";
 
 Slimey::Slimey(int win_width, int win_height, int swapInterval, bool isFullscreen = false)
 {
   // create slime window
-  window = std::make_shared<Window>(
+  window = std::make_unique<Window>(
     win_width, win_height, "Physarum Simulation", swapInterval, isFullscreen);
 
   // create simulator shader
-  sim = std::make_shared<SlimeSim>(
+  sim = std::make_unique<SlimeSim>(
     win_width, win_height, shader_dir, NUM_AGENTS, NUM_SPECIES, POS_MODE);
 
   // create rendering shader
-  renderer = std::make_shared<SlimeRenderer>(win_width, win_height, shader_dir, NUM_AGENTS);
+  renderer = std::make_unique<SlimeRenderer>(win_width, win_height, shader_dir, NUM_AGENTS);
 }
 
 Slimey::~Slimey() {}
