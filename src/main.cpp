@@ -5,8 +5,6 @@
 
 int main()
 {
-  GLFWwindow * window;
-
   /* Initialize the library */
   if (!glfwInit()) {
     std::cout << "cant init glfw" << std::endl;
@@ -14,6 +12,7 @@ int main()
   }
 
   /* Create a windowed mode window and its OpenGL context */
+  GLFWwindow * window = nullptr;
   window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
   if (!window) {
     glfwTerminate();
