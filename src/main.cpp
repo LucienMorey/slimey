@@ -22,6 +22,12 @@ int main()
   /* Make the window's context current */
   glfwMakeContextCurrent(window);
 
+  // initialise glew
+  if (glewInit() != GLEW_OK) {
+    std::cerr << "cant init glew" << std::endl;
+    return -2;
+  }
+
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
     /* Render here */
