@@ -7,7 +7,7 @@ int main()
 {
   /* Initialize the library */
   if (!glfwInit()) {
-    std::cout << "cant init glfw" << std::endl;
+    std::cerr << "cant init glfw" << std::endl;
     return -1;
   }
 
