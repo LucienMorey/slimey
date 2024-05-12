@@ -5,6 +5,7 @@
 #include <gl_wrapper/index_buffer.hpp>
 #include <gl_wrapper/shader.hpp>
 #include <gl_wrapper/shader_program.hpp>
+#include <gl_wrapper/texture2d32f.hpp>
 #include <gl_wrapper/vertex_array.hpp>
 #include <gl_wrapper/vertex_buffer.hpp>
 #include <iostream>
@@ -93,6 +94,11 @@ int main()
   program.attach_shader(vertex_shader);
   program.link();
   program.bind();
+
+  GlWrapper::Texture2d32f texture(SCREEN_WIDTH, SCREEN_HEIGHT);
+  texture.set_binding_base(0);
+  texture.bind();
+  program.set_uniform_1i("texture_sample", 0);
 
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
