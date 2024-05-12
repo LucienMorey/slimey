@@ -6,6 +6,7 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
 add_subdirectory(lib/glfw)
+add_subdirectory(lib/glm)
 
 add_compile_options(-Wall -Wextra -Wpedantic -std=c++20)
 
@@ -15,7 +16,7 @@ target_link_libraries(gl_wrapper INTERFACE GLEW::GLEW OpenGL::GL)
 
 add_executable(slimey src/main.cpp)
 
-target_link_libraries(slimey PRIVATE glfw GLEW::GLEW OpenGL::GL)
+target_link_libraries(slimey PRIVATE glfw GLEW::GLEW OpenGL::GL glm::glm)
 target_link_libraries(slimey PRIVATE gl_wrapper)
 
 add_custom_command(
