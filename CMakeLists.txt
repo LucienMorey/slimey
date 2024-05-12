@@ -7,8 +7,19 @@ find_package(GLEW REQUIRED)
 
 add_subdirectory(lib/glfw)
 
-add_compile_options(-Wall -Wextra -Wpedantic)
+add_compile_options(-Wall -Wextra -Wpedantic -std=c++20)
+
+add_library(gl_wrapper INTERFACE)
+target_include_directories(gl_wrapper INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include/gl_wrapper)
+target_link_libraries(gl_wrapper INTERFACE GLEW::GLEW OpenGL::GL)
 
 add_executable(slimey src/main.cpp)
 
-target_link_libraries(slimey glfw GLEW::GLEW OpenGL::GL)
+target_link_libraries(slimey PRIVATE glfw GLEW::GLEW OpenGL::GL)
+target_link_libraries(slimey PRIVATE gl_wrapper)
+
+add_custom_command(
+  TARGET slimey POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          ${CMAKE_SOURCE_DIR}/shaders
+          ${CMAKE_BINARY_DIR}/shaders)
