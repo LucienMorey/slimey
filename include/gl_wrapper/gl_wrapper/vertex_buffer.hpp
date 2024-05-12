@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 
+#include <gl_wrapper/vertex_buffer_layout.hpp>
 #include <span>
 
 namespace GlWrapper
@@ -27,7 +28,10 @@ public:
   void bind() const { glBindBuffer(GL_ARRAY_BUFFER, id_); }
   void unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
+  VertexBufferLayout & get_layout() { return layout_; }
+
 private:
+  VertexBufferLayout layout_;
   uint32_t id_;
 };
 

@@ -5,6 +5,7 @@
 #include <gl_wrapper/index_buffer.hpp>
 #include <gl_wrapper/shader.hpp>
 #include <gl_wrapper/shader_program.hpp>
+#include <gl_wrapper/vertex_array.hpp>
 #include <gl_wrapper/vertex_buffer.hpp>
 #include <iostream>
 #include <sstream>
@@ -45,9 +46,10 @@ int main()
   };
 
   GlWrapper::VertexBuffer<GLfloat> vertex_buffer(vertices);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2, (const void *)0);
-  vertex_buffer.unbind();
+  vertex_buffer.get_layout().append<float>(2);
+
+  GlWrapper::VertexArray<GLfloat> vertex_array;
+  vertex_array.set_buffer(vertex_buffer);
 
   // an array specifying which vertices will be used in the graphics triangle polygons
   static std::array<std::array<GLuint, 3>, 2> indices = {{
@@ -88,9 +90,11 @@ int main()
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Draw the triangle !
+    vertex_array.bind();
     index_buffer.bind();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     index_buffer.unbind();
+    vertex_array.unbind();
     /* Swap front and back buffers */
     glfwSwapBuffers(window);
 
