@@ -61,14 +61,21 @@ int main()
   std::stringstream fragment_source;
   fragment_source << fragment_file.rdbuf();
   GlWrapper::Shader fragment_shader(GL_FRAGMENT_SHADER, fragment_source.str());
-  fragment_shader.compile();
+  auto compilation_success = fragment_shader.compile();
+  if (!compilation_success) {
+    std::cerr << fragment_shader.get_compilation_log() << std::endl;
+    return -4;
+  }
 
   std::ifstream vertex_file("shaders/vertex_shader.glsl");
   std::stringstream vertex_source;
   vertex_source << vertex_file.rdbuf();
   GlWrapper::Shader vertex_shader(GL_VERTEX_SHADER, vertex_source.str());
-  vertex_shader.compile();
-
+  compilation_success = vertex_shader.compile();
+  if (!compilation_success) {
+    std::cerr << vertex_shader.get_compilation_log() << std::endl;
+    return -5;
+  }
   GlWrapper::ShaderProgram program;
   program.attach_shader(fragment_shader);
   program.attach_shader(vertex_shader);
