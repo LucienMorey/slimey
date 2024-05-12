@@ -4,4 +4,4 @@ This project is inspired by the [slime simulation video](https://www.youtube.com
 
 ## Pre-commit
 
-This repository is equipped with pre-commit for automatic style and linting enforcement. it should be installed and activated appropriatly.
+This repository is equipped with pre-commit for automatic style and linting enforcement. it should be installed and activated appropriately.
