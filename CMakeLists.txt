@@ -17,3 +17,9 @@ add_executable(slimey src/main.cpp)
 
 target_link_libraries(slimey PRIVATE glfw GLEW::GLEW OpenGL::GL)
 target_link_libraries(slimey PRIVATE gl_wrapper)
+
+add_custom_command(
+  TARGET slimey POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          ${CMAKE_SOURCE_DIR}/shaders
+          ${CMAKE_BINARY_DIR}/shaders)
