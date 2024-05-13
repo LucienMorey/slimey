@@ -45,7 +45,7 @@ public:
   void activate() const
   {
     uint32_t index = 0;
-    uint32_t offset = 0;
+    intptr_t offset = 0;
     for (const auto & element : elements_) {
       glEnableVertexAttribArray(index);
       glVertexAttribPointer(
