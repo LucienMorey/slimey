@@ -125,7 +125,7 @@ int main()
   for (auto & agent : agents) {
     agent.position.x = dist(dev) * SCREEN_WIDTH;
     agent.position.y = dist(dev) * SCREEN_HEIGHT;
-    agent.angle = dist(dev) * M_2_PI;
+    agent.angle = dist(dev) * 2 * M_PI;
   }
 
   GlWrapper::Buffer<Slimey::Agent> agent_buffer(agents);
