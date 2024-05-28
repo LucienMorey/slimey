@@ -26,9 +26,11 @@ std::string read_text_from_file(std::string file_path)
 
 constexpr int32_t SCREEN_WIDTH = 640;
 constexpr int32_t SCREEN_HEIGHT = 480;
-constexpr uint32_t NUM_AGENTS = 100;
+constexpr uint32_t NUM_AGENTS = 500;
 constexpr float AGENT_SPEED = 30.0;
 constexpr float EVAPORATION_RATE = 0.6;
+constexpr float DIFFUSE_WEIGHT = 0.5;
+constexpr int DIFFUSE_RADIUS = 1;
 
 int main()
 {
@@ -167,7 +169,11 @@ int main()
 
     // dispatch trail update
     trail_program.bind();
+    trail_program.set_uniform_1i("screen_width", SCREEN_WIDTH);
+    trail_program.set_uniform_1i("screen_height", SCREEN_HEIGHT);
     trail_program.set_uniform_1f("evaporation_rate", EVAPORATION_RATE);
+    trail_program.set_uniform_1f("diffuse_weight", DIFFUSE_WEIGHT);
+    trail_program.set_uniform_1i("diffuse_radius", DIFFUSE_RADIUS);
     trail_program.set_uniform_1f("delta_time", delta_time);
     glDispatchCompute(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
