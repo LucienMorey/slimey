@@ -10,6 +10,17 @@
 #include <iostream>
 #include <sstream>
 
+std::string read_text_from_file(std::string file_path)
+{
+  std::ifstream file(file_path);
+  std::stringstream text;
+  text << file.rdbuf();
+  return text.str();
+}
+
+constexpr int32_t SCREEN_WIDTH = 640;
+constexpr int32_t SCREEN_HEIGHT = 480;
+
 int main()
 {
   /* Initialize the library */
@@ -23,7 +34,7 @@ int main()
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   /* Create a windowed mode window and its OpenGL context */
   GLFWwindow * window = nullptr;
-  window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+  window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello World", NULL, NULL);
   if (!window) {
     glfwTerminate();
     return -1;
@@ -62,20 +73,16 @@ int main()
 
   GlWrapper::IndexBuffer index_buffer(indices);
 
-  std::ifstream fragment_file("shaders/fragment_shader.glsl");
-  std::stringstream fragment_source;
-  fragment_source << fragment_file.rdbuf();
-  GlWrapper::Shader fragment_shader(GL_FRAGMENT_SHADER, fragment_source.str());
+  GlWrapper::Shader fragment_shader(
+    GL_FRAGMENT_SHADER, read_text_from_file("shaders/fragment_shader.glsl"));
   auto compilation_success = fragment_shader.compile();
   if (!compilation_success) {
     std::cerr << fragment_shader.get_compilation_log() << std::endl;
     return -4;
   }
 
-  std::ifstream vertex_file("shaders/vertex_shader.glsl");
-  std::stringstream vertex_source;
-  vertex_source << vertex_file.rdbuf();
-  GlWrapper::Shader vertex_shader(GL_VERTEX_SHADER, vertex_source.str());
+  GlWrapper::Shader vertex_shader(
+    GL_VERTEX_SHADER, read_text_from_file("shaders/vertex_shader.glsl"));
   compilation_success = vertex_shader.compile();
   if (!compilation_success) {
     std::cerr << vertex_shader.get_compilation_log() << std::endl;
