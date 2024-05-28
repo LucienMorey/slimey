@@ -1,7 +1,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <math.h>
 
+#include <chrono>
 #include <fstream>
+#include <gl_wrapper/buffer.hpp>
 #include <gl_wrapper/index_buffer.hpp>
 #include <gl_wrapper/shader.hpp>
 #include <gl_wrapper/shader_program.hpp>
@@ -9,6 +12,8 @@
 #include <gl_wrapper/vertex_array.hpp>
 #include <gl_wrapper/vertex_buffer.hpp>
 #include <iostream>
+#include <random>
+#include <simulation/agent.hpp>
 #include <sstream>
 
 std::string read_text_from_file(std::string file_path)
@@ -21,6 +26,7 @@ std::string read_text_from_file(std::string file_path)
 
 constexpr int32_t SCREEN_WIDTH = 640;
 constexpr int32_t SCREEN_HEIGHT = 480;
+constexpr uint32_t NUM_AGENTS = 5000;
 
 int main()
 {
@@ -112,12 +118,25 @@ int main()
   agent_program.link();
   agent_program.bind();
 
+  std::random_device dev;
+  std::uniform_real_distribution<double> dist(0.0, 1.0);
+  std::array<Slimey::Agent, NUM_AGENTS> agents;
+  for (auto & agent : agents) {
+    agent.position.x = dist(dev) * SCREEN_WIDTH;
+    agent.position.y = dist(dev) * SCREEN_HEIGHT;
+    agent.angle = dist(dev) * M_2_PI;
+  }
+
+  GlWrapper::Buffer<Slimey::Agent> agent_buffer(agents);
+  agent_buffer.set_binding_base(1);
+  agent_buffer.bind();
+
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
     // Dispatch compute shader
     agent_program.bind();
-    glDispatchCompute(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
-    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+    glDispatchCompute(NUM_AGENTS, 1, 1);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_DYNAMIC_STORAGE_BIT);
 
     // Draw the vertex block
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
