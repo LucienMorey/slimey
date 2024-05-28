@@ -1,5 +1,9 @@
 #version 460 core
 
-layout(location = 0) out vec4 color;
+out vec4 color;
 
-void main() { color = vec4(0.0, 1.0, 0.0, 1.0); }
+in vec2 texture_coordinate;
+
+uniform sampler2D texture_sample;
+
+void main() { color = texture(texture_sample, texture_coordinate); }

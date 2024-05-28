@@ -1,14 +1,33 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <math.h>
 
+#include <chrono>
 #include <fstream>
+#include <gl_wrapper/buffer.hpp>
 #include <gl_wrapper/index_buffer.hpp>
 #include <gl_wrapper/shader.hpp>
 #include <gl_wrapper/shader_program.hpp>
+#include <gl_wrapper/texture2d32f.hpp>
 #include <gl_wrapper/vertex_array.hpp>
 #include <gl_wrapper/vertex_buffer.hpp>
 #include <iostream>
+#include <random>
+#include <simulation/agent.hpp>
 #include <sstream>
+
+std::string read_text_from_file(std::string file_path)
+{
+  std::ifstream file(file_path);
+  std::stringstream text;
+  text << file.rdbuf();
+  return text.str();
+}
+
+constexpr int32_t SCREEN_WIDTH = 640;
+constexpr int32_t SCREEN_HEIGHT = 480;
+constexpr uint32_t NUM_AGENTS = 100;
+constexpr float AGENT_SPEED = 30.0;
 
 int main()
 {
@@ -23,7 +42,7 @@ int main()
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   /* Create a windowed mode window and its OpenGL context */
   GLFWwindow * window = nullptr;
-  window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+  window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello World", NULL, NULL);
   if (!window) {
     glfwTerminate();
     return -1;
@@ -62,20 +81,16 @@ int main()
 
   GlWrapper::IndexBuffer index_buffer(indices);
 
-  std::ifstream fragment_file("shaders/fragment_shader.glsl");
-  std::stringstream fragment_source;
-  fragment_source << fragment_file.rdbuf();
-  GlWrapper::Shader fragment_shader(GL_FRAGMENT_SHADER, fragment_source.str());
+  GlWrapper::Shader fragment_shader(
+    GL_FRAGMENT_SHADER, read_text_from_file("shaders/fragment_shader.glsl"));
   auto compilation_success = fragment_shader.compile();
   if (!compilation_success) {
     std::cerr << fragment_shader.get_compilation_log() << std::endl;
     return -4;
   }
 
-  std::ifstream vertex_file("shaders/vertex_shader.glsl");
-  std::stringstream vertex_source;
-  vertex_source << vertex_file.rdbuf();
-  GlWrapper::Shader vertex_shader(GL_VERTEX_SHADER, vertex_source.str());
+  GlWrapper::Shader vertex_shader(
+    GL_VERTEX_SHADER, read_text_from_file("shaders/vertex_shader.glsl"));
   compilation_success = vertex_shader.compile();
   if (!compilation_success) {
     std::cerr << vertex_shader.get_compilation_log() << std::endl;
@@ -87,12 +102,59 @@ int main()
   program.link();
   program.bind();
 
+  GlWrapper::Texture2d32f texture(SCREEN_WIDTH, SCREEN_HEIGHT);
+  texture.set_binding_base(0);
+  texture.bind();
+  program.set_uniform_1i("texture_sample", 0);
+
+  GlWrapper::Shader agent_shader(GL_COMPUTE_SHADER, read_text_from_file("shaders/agent.glsl"));
+  compilation_success = agent_shader.compile();
+  if (!compilation_success) {
+    std::cerr << agent_shader.get_compilation_log() << std::endl;
+    return -6;
+  }
+
+  GlWrapper::ShaderProgram agent_program;
+  agent_program.attach_shader(agent_shader);
+  agent_program.link();
+  agent_program.bind();
+
+  std::random_device dev;
+  std::uniform_real_distribution<double> dist(0.0, 1.0);
+  std::array<Slimey::Agent, NUM_AGENTS> agents;
+  for (auto & agent : agents) {
+    agent.position.x = dist(dev) * SCREEN_WIDTH;
+    agent.position.y = dist(dev) * SCREEN_HEIGHT;
+    agent.angle = dist(dev) * 2 * M_PI;
+  }
+
+  GlWrapper::Buffer<Slimey::Agent> agent_buffer(agents);
+  agent_buffer.set_binding_base(1);
+  agent_buffer.bind();
+
+  auto last_time = std::chrono::steady_clock::now().time_since_epoch().count();
+
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
-    /* Render here */
-    glClear(GL_COLOR_BUFFER_BIT);
+    auto current_time = std::chrono::steady_clock::now().time_since_epoch().count();
+    auto delta_time = (current_time - last_time) / 1e9;
+    last_time = current_time;
 
-    // Draw the triangle !
+    // Dispatch compute shader
+    agent_program.bind();
+    agent_buffer.bind();
+    agent_program.set_uniform_1i("screen_width", SCREEN_WIDTH);
+    agent_program.set_uniform_1i("screen_height", SCREEN_HEIGHT);
+    agent_program.set_uniform_1f("speed", AGENT_SPEED);
+    agent_program.set_uniform_1f("delta_time", delta_time);
+    glDispatchCompute(NUM_AGENTS, 1, 1);
+    glMemoryBarrier(
+      GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_DYNAMIC_STORAGE_BIT |
+      GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
+
+    // Draw the vertex block
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    program.bind();
     vertex_array.bind();
     index_buffer.bind();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);

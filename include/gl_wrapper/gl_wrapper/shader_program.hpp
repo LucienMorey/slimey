@@ -44,7 +44,22 @@ public:
   void bind() const { glUseProgram(id_); }
   void unbind() const { glUseProgram(0); }
 
+  void set_uniform_1i(const std::string & name, const int32_t v0)
+  {
+    glUniform1i(get_uniform_location(name), v0);
+  }
+
+  void set_uniform_1f(const std::string & name, const float v0)
+  {
+    glUniform1f(get_uniform_location(name), v0);
+  }
+
 private:
   uint32_t id_;
+
+  int get_uniform_location(const std::string & name)
+  {
+    return glGetUniformLocation(id_, name.c_str());
+  }
 };
 };  // namespace GlWrapper
