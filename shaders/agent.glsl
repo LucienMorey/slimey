@@ -51,8 +51,8 @@ void main()
   if (
     ((new_position.x > screen_width) || (new_position.x < 0)) ||
     ((new_position.y > screen_height) || (new_position.y < 0))) {
-    new_position.x = max(0., min(1.0, new_position.x));
-    new_position.y = max(0., min(1.0, new_position.y));
+    new_position.x = max(0., min(float(screen_width), new_position.x));
+    new_position.y = max(0., min(float(screen_height), new_position.y));
     new_angle = random_generator(uint(new_position.x * screen_width)) * 6.282;
   }
 
