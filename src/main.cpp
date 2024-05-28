@@ -100,12 +100,28 @@ int main()
   texture.bind();
   program.set_uniform_1i("texture_sample", 0);
 
+  GlWrapper::Shader agent_shader(GL_COMPUTE_SHADER, read_text_from_file("shaders/agent.glsl"));
+  compilation_success = agent_shader.compile();
+  if (!compilation_success) {
+    std::cerr << agent_shader.get_compilation_log() << std::endl;
+    return -6;
+  }
+
+  GlWrapper::ShaderProgram agent_program;
+  agent_program.attach_shader(agent_shader);
+  agent_program.link();
+  agent_program.bind();
+
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
-    /* Render here */
-    glClear(GL_COLOR_BUFFER_BIT);
+    // Dispatch compute shader
+    agent_program.bind();
+    glDispatchCompute(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-    // Draw the triangle !
+    // Draw the vertex block
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    program.bind();
     vertex_array.bind();
     index_buffer.bind();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
