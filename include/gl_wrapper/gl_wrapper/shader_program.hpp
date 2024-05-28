@@ -49,6 +49,11 @@ public:
     glUniform1i(get_uniform_location(name), v0);
   }
 
+  void set_uniform_1f(const std::string & name, const float v0)
+  {
+    glUniform1f(get_uniform_location(name), v0);
+  }
+
 private:
   uint32_t id_;
 
