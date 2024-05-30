@@ -15,6 +15,7 @@ uniform int screen_width;
 uniform int screen_height;
 uniform float speed;
 uniform float delta_time;
+uniform float current_time;
 
 uint hash(uint state)
 {
@@ -53,7 +54,7 @@ void main()
     ((new_position.y > screen_height) || (new_position.y < 0))) {
     new_position.x = max(0., min(float(screen_width), new_position.x));
     new_position.y = max(0., min(float(screen_height), new_position.y));
-    new_angle = random_generator(uint(new_position.x * screen_width)) * 6.282;
+    new_angle = random_generator(uint(current_time * gl_GlobalInvocationID.x)) * 6.282;
   }
 
   // update agent
