@@ -16,6 +16,12 @@
 #include <simulation/agent.hpp>
 #include <sstream>
 
+void window_resize_callback(GLFWwindow * window, int width, int height)
+{
+  (void)window;
+  glViewport(0, 0, width, height);
+}
+
 std::string read_text_from_file(std::string file_path)
 {
   std::ifstream file(file_path);
@@ -53,6 +59,8 @@ int main()
 
   /* Make the window's context current */
   glfwMakeContextCurrent(window);
+
+  glfwSetFramebufferSizeCallback(window, window_resize_callback);
 
   // initialise glew
   if (glewInit() != GLEW_OK) {
