@@ -26,8 +26,11 @@ std::string read_text_from_file(std::string file_path)
 
 constexpr int32_t SCREEN_WIDTH = 640;
 constexpr int32_t SCREEN_HEIGHT = 480;
-constexpr uint32_t NUM_AGENTS = 100;
+constexpr uint32_t NUM_AGENTS = 500;
 constexpr float AGENT_SPEED = 30.0;
+constexpr float EVAPORATION_RATE = 0.6;
+constexpr float DIFFUSE_WEIGHT = 0.5;
+constexpr int DIFFUSE_RADIUS = 1;
 
 int main()
 {
@@ -132,6 +135,18 @@ int main()
   agent_buffer.set_binding_base(1);
   agent_buffer.bind();
 
+  GlWrapper::Shader trail_shader(GL_COMPUTE_SHADER, read_text_from_file("shaders/trail.glsl"));
+  compilation_success = trail_shader.compile();
+  if (!compilation_success) {
+    std::cerr << trail_shader.get_compilation_log() << std::endl;
+    return -7;
+  }
+
+  GlWrapper::ShaderProgram trail_program;
+  trail_program.attach_shader(trail_shader);
+  trail_program.link();
+  trail_program.bind();
+
   auto last_time = std::chrono::steady_clock::now().time_since_epoch().count();
 
   /* Loop until the user closes the window */
@@ -140,7 +155,7 @@ int main()
     auto delta_time = (current_time - last_time) / 1e9;
     last_time = current_time;
 
-    // Dispatch compute shader
+    // Dispatch sim step
     agent_program.bind();
     agent_buffer.bind();
     agent_program.set_uniform_1i("screen_width", SCREEN_WIDTH);
@@ -151,6 +166,17 @@ int main()
     glMemoryBarrier(
       GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_DYNAMIC_STORAGE_BIT |
       GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
+
+    // dispatch trail update
+    trail_program.bind();
+    trail_program.set_uniform_1i("screen_width", SCREEN_WIDTH);
+    trail_program.set_uniform_1i("screen_height", SCREEN_HEIGHT);
+    trail_program.set_uniform_1f("evaporation_rate", EVAPORATION_RATE);
+    trail_program.set_uniform_1f("diffuse_weight", DIFFUSE_WEIGHT);
+    trail_program.set_uniform_1i("diffuse_radius", DIFFUSE_RADIUS);
+    trail_program.set_uniform_1f("delta_time", delta_time);
+    glDispatchCompute(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     // Draw the vertex block
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
