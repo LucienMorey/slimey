@@ -59,8 +59,8 @@ static std::array<std::array<GLuint, 3>, 2> indices = {{
 // simulation parameters
 constexpr uint32_t NUM_AGENTS = 500;
 constexpr float AGENT_SPEED = 30.0;
-constexpr float EVAPORATION_RATE = 0.6;
-constexpr float DIFFUSE_WEIGHT = 0.5;
+constexpr float EVAPORATION_RATE = 0.2;
+constexpr float DIFFUSE_WEIGHT = 0.9;
 constexpr int DIFFUSE_RADIUS = 1;
 
 int main()
@@ -116,10 +116,10 @@ int main()
   program.link();
   program.bind();
 
-  GlWrapper::Texture2d32f texture(SCREEN_WIDTH, SCREEN_HEIGHT);
-  texture.set_binding_base(0);
-  texture.bind();
-  program.set_uniform_1i("texture_sample", 0);
+  GlWrapper::Texture2d32f trail_map(SCREEN_WIDTH, SCREEN_HEIGHT);
+  trail_map.set_binding_base(0);
+  trail_map.bind();
+  program.set_uniform_1i("trail_map", 0);
 
   GlWrapper::Shader agent_shader(GL_COMPUTE_SHADER, read_text_from_file("shaders/agent.glsl"));
   if (!agent_shader.compile()) {

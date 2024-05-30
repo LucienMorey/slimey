@@ -4,6 +4,6 @@ out vec4 color;
 
 in vec2 texture_coordinate;
 
-uniform sampler2D texture_sample;
+uniform sampler2D trail_map;
 
-void main() { color = texture(texture_sample, texture_coordinate); }
+void main() { color = texture(trail_map, texture_coordinate); }
