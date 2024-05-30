@@ -155,12 +155,12 @@ int main()
   trail_program.link();
   trail_program.bind();
 
-  auto last_time = std::chrono::steady_clock::now().time_since_epoch().count();
+  auto last_time = std::chrono::steady_clock::now().time_since_epoch().count() / 1e9;
 
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
-    auto current_time = std::chrono::steady_clock::now().time_since_epoch().count();
-    auto delta_time = (current_time - last_time) / 1e9;
+    auto current_time = std::chrono::steady_clock::now().time_since_epoch().count() / 1e9;
+    auto delta_time = (current_time - last_time);
     last_time = current_time;
 
     // Dispatch sim step
@@ -170,6 +170,7 @@ int main()
     agent_program.set_uniform_1i("screen_height", SCREEN_HEIGHT);
     agent_program.set_uniform_1f("speed", AGENT_SPEED);
     agent_program.set_uniform_1f("delta_time", delta_time);
+    agent_program.set_uniform_1f("current_time", current_time);
     glDispatchCompute(NUM_AGENTS, 1, 1);
     glMemoryBarrier(
       GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_DYNAMIC_STORAGE_BIT |
