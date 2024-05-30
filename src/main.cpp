@@ -36,8 +36,27 @@ void print_error_and_exit(const std::string_view & message, int exit_code)
   exit(exit_code);
 }
 
+// Window Context parameters
 constexpr int32_t SCREEN_WIDTH = 640;
 constexpr int32_t SCREEN_HEIGHT = 480;
+
+// An array of 4 vectors which represents 4 vertices.
+// In this situation the vertex specification is just
+// position on the screen relative to the centre of a window context
+static std::array<GLfloat, 8> vertices = {
+  -1.0f, -1.0f,  // 0
+  1.0f,  -1.0f,  // 1
+  1.0f,  1.0f,   // 2
+  -1.0f, 1.0f    // 3
+};
+
+// an array specifying which vertices will be used in the graphics triangle polygons
+static std::array<std::array<GLuint, 3>, 2> indices = {{
+  {0, 1, 2},  //0
+  {2, 3, 0}   //1
+}};
+
+// simulation parameters
 constexpr uint32_t NUM_AGENTS = 500;
 constexpr float AGENT_SPEED = 30.0;
 constexpr float EVAPORATION_RATE = 0.6;
@@ -71,27 +90,11 @@ int main()
     print_error_and_exit("cant init glew", -3);
   }
 
-  // An array of 4 vectors which represents 4 vertices.
-  // In this situation the vertex specification is just
-  // position on the screen relative to the centre of a window context
-  static std::array<GLfloat, 8> vertices = {
-    -1.0f, -1.0f,  // 0
-    1.0f,  -1.0f,  // 1
-    1.0f,  1.0f,   // 2
-    -1.0f, 1.0f    // 3
-  };
-
   GlWrapper::VertexBuffer<GLfloat> vertex_buffer(vertices);
   vertex_buffer.get_layout().append<float>(2);
 
   GlWrapper::VertexArray<GLfloat> vertex_array;
   vertex_array.set_buffer(vertex_buffer);
-
-  // an array specifying which vertices will be used in the graphics triangle polygons
-  static std::array<std::array<GLuint, 3>, 2> indices = {{
-    {0, 1, 2},  //0
-    {2, 3, 0}   //1
-  }};
 
   GlWrapper::IndexBuffer index_buffer(indices);
 
