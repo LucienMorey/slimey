@@ -48,7 +48,7 @@ void main()
   vec4 old_pixel_colour = imageLoad(texture_sample, pixel_coord).rgba;
   vec4 blurred = blur(pixel_coord, diffuse_radius);
   vec4 diffused = old_pixel_colour * (1 - diffuse_weight) + blurred * diffuse_weight;
-  vec4 new_new_pixel_colour = evaporate(diffused, evaporation_rate * delta_time);
+  vec4 new_pixel_colour = evaporate(diffused, evaporation_rate * delta_time);
 
-  imageStore(texture_sample, pixel_coord, new_new_pixel_colour);
+  imageStore(texture_sample, pixel_coord, new_pixel_colour);
 }
