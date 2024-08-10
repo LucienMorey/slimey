@@ -11,6 +11,7 @@
 #include <gl_wrapper/texture2d32f.hpp>
 #include <gl_wrapper/vertex_array.hpp>
 #include <gl_wrapper/vertex_buffer.hpp>
+#include <glm/vec4.hpp>
 #include <iostream>
 #include <random>
 #include <simulation/agent.hpp>
@@ -62,6 +63,7 @@ constexpr float AGENT_SPEED = 30.0;
 constexpr float EVAPORATION_RATE = 0.2;
 constexpr float DIFFUSE_WEIGHT = 0.9;
 constexpr int DIFFUSE_RADIUS = 1;
+constexpr glm::vec4 SPECIES_MASK = {1.0, 1.0, 1.0, 1.0};
 
 int main()
 {
@@ -138,6 +140,7 @@ int main()
     agent.position.x = dist(dev) * SCREEN_WIDTH;
     agent.position.y = dist(dev) * SCREEN_HEIGHT;
     agent.angle = dist(dev) * 2 * M_PI;
+    agent.species_mask = SPECIES_MASK;
   }
 
   GlWrapper::Buffer<Slimey::Agent> agent_buffer(agents);

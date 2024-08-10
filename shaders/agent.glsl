@@ -5,6 +5,7 @@ struct Agent
   vec2 position;
   float angle;
   float padding_;
+  vec4 species_mask;
 };
 layout(local_size_x = 1, local_size_y = 1) in;
 
@@ -63,5 +64,5 @@ void main()
   agents[gl_GlobalInvocationID.x] = agent;
   // update pixel
   ivec2 pixel_coord = ivec2(int(agent.position.x), int(agent.position.y));
-  imageStore(trail_map, pixel_coord, vec4(1.0, 1.0, 1.0, 1.0));
+  imageStore(trail_map, pixel_coord, agent.species_mask);
 }

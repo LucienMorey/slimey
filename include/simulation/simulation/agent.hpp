@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 
 namespace Slimey
 {
@@ -11,5 +12,6 @@ struct Agent
   glm::vec2 position;
   float angle;
   float padding_;
+  glm::vec4 species_mask;
 };
 };  // namespace Slimey
