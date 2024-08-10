@@ -2,7 +2,7 @@
 
 layout(local_size_x = 1, local_size_y = 1) in;
 
-layout(rgba32f, binding = 0) uniform image2D texture_sample;
+layout(rgba32f, binding = 0) uniform image2D trail_map;
 
 uniform int screen_width;
 uniform int screen_height;
@@ -32,7 +32,7 @@ vec4 blur(ivec2 pixel_coord, int radius)
       if (
         (sample_x >= 0) && (sample_x <= screen_width) && (sample_y >= 0) &&
         (sample_y <= screen_height)) {
-        sum += imageLoad(texture_sample, ivec2(sample_x, sample_y)).rgba;
+        sum += imageLoad(trail_map, ivec2(sample_x, sample_y)).rgba;
         total_weight += 1.0;
       }
     }
@@ -45,10 +45,10 @@ void main()
 {
   // update pixel
   ivec2 pixel_coord = ivec2(gl_GlobalInvocationID.xy);
-  vec4 old_pixel_colour = imageLoad(texture_sample, pixel_coord).rgba;
+  vec4 old_pixel_colour = imageLoad(trail_map, pixel_coord).rgba;
   vec4 blurred = blur(pixel_coord, diffuse_radius);
   vec4 diffused = old_pixel_colour * (1 - diffuse_weight) + blurred * diffuse_weight;
   vec4 new_pixel_colour = evaporate(diffused, evaporation_rate * delta_time);
 
-  imageStore(texture_sample, pixel_coord, new_pixel_colour);
+  imageStore(trail_map, pixel_coord, new_pixel_colour);
 }
