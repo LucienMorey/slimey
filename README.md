@@ -12,6 +12,8 @@ pre-commit install
 
 ```
 
+pre-commit can be installed with pip on ubuntu distributions of 22.04 or earlier. Alternatively it can be installed with apt on later releases.
+
 ## Setup
 
 ### Git Submodules
