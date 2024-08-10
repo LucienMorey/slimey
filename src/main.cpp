@@ -30,8 +30,33 @@ std::string read_text_from_file(std::string file_path)
   return text.str();
 }
 
+void print_error_and_exit(const std::string_view & message, int exit_code)
+{
+  std::cerr << message << std::endl;
+  exit(exit_code);
+}
+
+// Window Context parameters
 constexpr int32_t SCREEN_WIDTH = 640;
 constexpr int32_t SCREEN_HEIGHT = 480;
+
+// An array of 4 vectors which represents 4 vertices.
+// In this situation the vertex specification is just
+// position on the screen relative to the centre of a window context
+static std::array<GLfloat, 8> vertices = {
+  -1.0f, -1.0f,  // 0
+  1.0f,  -1.0f,  // 1
+  1.0f,  1.0f,   // 2
+  -1.0f, 1.0f    // 3
+};
+
+// an array specifying which vertices will be used in the graphics triangle polygons
+static std::array<std::array<GLuint, 3>, 2> indices = {{
+  {0, 1, 2},  //0
+  {2, 3, 0}   //1
+}};
+
+// simulation parameters
 constexpr uint32_t NUM_AGENTS = 500;
 constexpr float AGENT_SPEED = 30.0;
 constexpr float EVAPORATION_RATE = 0.6;
@@ -42,19 +67,17 @@ int main()
 {
   /* Initialize the library */
   if (!glfwInit()) {
-    std::cerr << "cant init glfw" << std::endl;
-    return -1;
+    print_error_and_exit("cant init glfw", -1);
   }
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   /* Create a windowed mode window and its OpenGL context */
-  GLFWwindow * window = nullptr;
-  window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello World", NULL, NULL);
+  GLFWwindow * window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello World", NULL, NULL);
   if (!window) {
     glfwTerminate();
-    return -1;
+    print_error_and_exit("Could not create window", -2);
   }
 
   /* Make the window's context current */
@@ -64,19 +87,8 @@ int main()
 
   // initialise glew
   if (glewInit() != GLEW_OK) {
-    std::cerr << "cant init glew" << std::endl;
-    return -2;
+    print_error_and_exit("cant init glew", -3);
   }
-
-  // An array of 4 vectors which represents 4 vertices.
-  // In this situation the vertex specification is just
-  // position on the screen relative to the centre of a window context
-  static std::array<GLfloat, 8> vertices = {
-    -1.0f, -1.0f,  // 0
-    1.0f,  -1.0f,  // 1
-    1.0f,  1.0f,   // 2
-    -1.0f, 1.0f    // 3
-  };
 
   GlWrapper::VertexBuffer<GLfloat> vertex_buffer(vertices);
   vertex_buffer.get_layout().append<float>(2);
@@ -84,29 +96,20 @@ int main()
   GlWrapper::VertexArray<GLfloat> vertex_array;
   vertex_array.set_buffer(vertex_buffer);
 
-  // an array specifying which vertices will be used in the graphics triangle polygons
-  static std::array<std::array<GLuint, 3>, 2> indices = {{
-    {0, 1, 2},  //0
-    {2, 3, 0}   //1
-  }};
-
   GlWrapper::IndexBuffer index_buffer(indices);
 
   GlWrapper::Shader fragment_shader(
     GL_FRAGMENT_SHADER, read_text_from_file("shaders/fragment_shader.glsl"));
-  auto compilation_success = fragment_shader.compile();
-  if (!compilation_success) {
-    std::cerr << fragment_shader.get_compilation_log() << std::endl;
-    return -4;
+  if (!fragment_shader.compile()) {
+    print_error_and_exit(fragment_shader.get_compilation_log(), -4);
   }
 
   GlWrapper::Shader vertex_shader(
     GL_VERTEX_SHADER, read_text_from_file("shaders/vertex_shader.glsl"));
-  compilation_success = vertex_shader.compile();
-  if (!compilation_success) {
-    std::cerr << vertex_shader.get_compilation_log() << std::endl;
-    return -5;
+  if (!vertex_shader.compile()) {
+    print_error_and_exit(vertex_shader.get_compilation_log(), -5);
   }
+
   GlWrapper::ShaderProgram program;
   program.attach_shader(fragment_shader);
   program.attach_shader(vertex_shader);
@@ -119,10 +122,8 @@ int main()
   program.set_uniform_1i("texture_sample", 0);
 
   GlWrapper::Shader agent_shader(GL_COMPUTE_SHADER, read_text_from_file("shaders/agent.glsl"));
-  compilation_success = agent_shader.compile();
-  if (!compilation_success) {
-    std::cerr << agent_shader.get_compilation_log() << std::endl;
-    return -6;
+  if (!agent_shader.compile()) {
+    print_error_and_exit(agent_shader.get_compilation_log(), -6);
   }
 
   GlWrapper::ShaderProgram agent_program;
@@ -144,10 +145,8 @@ int main()
   agent_buffer.bind();
 
   GlWrapper::Shader trail_shader(GL_COMPUTE_SHADER, read_text_from_file("shaders/trail.glsl"));
-  compilation_success = trail_shader.compile();
-  if (!compilation_success) {
-    std::cerr << trail_shader.get_compilation_log() << std::endl;
-    return -7;
+  if (!trail_shader.compile()) {
+    print_error_and_exit(trail_shader.get_compilation_log(), -7);
   }
 
   GlWrapper::ShaderProgram trail_program;
