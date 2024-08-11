@@ -11,6 +11,7 @@
 #include <gl_wrapper/texture2d32f.hpp>
 #include <gl_wrapper/vertex_array.hpp>
 #include <gl_wrapper/vertex_buffer.hpp>
+#include <glm/vec4.hpp>
 #include <iostream>
 #include <random>
 #include <simulation/agent.hpp>
@@ -58,9 +59,18 @@ static std::array<std::array<GLuint, 3>, 2> indices = {{
 
 // simulation parameters
 constexpr uint32_t NUM_AGENTS = 500;
-constexpr float AGENT_SPEED = 30.0;
-constexpr float EVAPORATION_RATE = 0.2;
-constexpr float DIFFUSE_WEIGHT = 0.9;
+
+// agent parameters
+constexpr float LINEAR_SPEED = 30.0;
+constexpr float ANGULAR_SPEED = M_PI / 3.0;
+constexpr glm::vec4 SPECIES_MASK = {1.0, 1.0, 1.0, 1.0};
+constexpr float SENSOR_LOOK_AHEAD = 35.0;
+constexpr int SENSOR_RADIUS = 1;
+constexpr float SENSOR_OFFSET = M_PI / 3.0;
+
+// trail parameters
+constexpr float EVAPORATION_RATE = 0.3;
+constexpr float DIFFUSE_WEIGHT = 0.08;
 constexpr int DIFFUSE_RADIUS = 1;
 
 int main()
@@ -138,6 +148,12 @@ int main()
     agent.position.x = dist(dev) * SCREEN_WIDTH;
     agent.position.y = dist(dev) * SCREEN_HEIGHT;
     agent.angle = dist(dev) * 2 * M_PI;
+    agent.species_mask = SPECIES_MASK;
+    agent.linear_speed = LINEAR_SPEED;
+    agent.angular_speed = ANGULAR_SPEED;
+    agent.sensor_look_ahead = SENSOR_LOOK_AHEAD;
+    agent.sensor_radius = SENSOR_RADIUS;
+    agent.sensor_offset = SENSOR_OFFSET;
   }
 
   GlWrapper::Buffer<Slimey::Agent> agent_buffer(agents);
@@ -167,7 +183,6 @@ int main()
     agent_buffer.bind();
     agent_program.set_uniform_1i("screen_width", SCREEN_WIDTH);
     agent_program.set_uniform_1i("screen_height", SCREEN_HEIGHT);
-    agent_program.set_uniform_1f("speed", AGENT_SPEED);
     agent_program.set_uniform_1f("delta_time", delta_time);
     agent_program.set_uniform_1f("current_time", current_time);
     glDispatchCompute(NUM_AGENTS, 1, 1);
