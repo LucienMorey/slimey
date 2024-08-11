@@ -15,6 +15,7 @@ struct Agent
   glm::vec4 species_mask;
   float linear_speed;
   float angular_speed;
-  glm::vec2 padding2_;
+  int32_t sensor_radius;
+  float sensor_look_ahead;
 };
 };  // namespace Slimey
