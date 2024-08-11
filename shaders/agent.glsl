@@ -39,6 +39,13 @@ float random_generator(uint seed)
   return scale_hash(hashed);
 }
 
+bool position_off_screen(vec2 position)
+{
+  return (
+    ((position.x > screen_width) || (position.x < 0)) ||
+    ((position.y > screen_height) || (position.y < 0)));
+}
+
 void main()
 {
   // determine agent instance
@@ -51,9 +58,7 @@ void main()
   agent.position = agent.position + velocity * delta_time;
 
   // clamp
-  if (
-    ((agent.position.x > screen_width) || (agent.position.x < 0)) ||
-    ((agent.position.y > screen_height) || (agent.position.y < 0))) {
+  if (position_off_screen(agent.position)) {
     agent.position.x = max(0., min(float(screen_width), agent.position.x));
     agent.position.y = max(0., min(float(screen_height), agent.position.y));
     agent.angle = random_generator(uint(current_time * gl_GlobalInvocationID.x)) * 6.282;
