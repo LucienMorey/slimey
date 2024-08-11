@@ -143,12 +143,13 @@ int main()
   agent_program.bind();
 
   std::random_device dev;
+  std::mt19937 gen(dev());
   std::uniform_real_distribution<double> dist(0.0, 1.0);
   std::vector<Slimey::Agent> agents(NUM_AGENTS);
   for (auto & agent : agents) {
-    agent.position.x = dist(dev) * SCREEN_WIDTH;
-    agent.position.y = dist(dev) * SCREEN_HEIGHT;
-    agent.angle = dist(dev) * 2 * M_PI;
+    agent.position.x = dist(gen) * SCREEN_WIDTH;
+    agent.position.y = dist(gen) * SCREEN_HEIGHT;
+    agent.angle = dist(gen) * 2 * M_PI;
     agent.species_mask = SPECIES_MASK;
   }
 
