@@ -48,22 +48,20 @@ void main()
   vec2 velocity = agent.linear_speed * vec2(cos(agent.angle), sin(agent.angle));
 
   // determine new position
-  vec2 new_position = agent.position + velocity * delta_time;
-  float new_angle = agent.angle;
+  agent.position = agent.position + velocity * delta_time;
 
   // clamp
   if (
-    ((new_position.x > screen_width) || (new_position.x < 0)) ||
-    ((new_position.y > screen_height) || (new_position.y < 0))) {
-    new_position.x = max(0., min(float(screen_width), new_position.x));
-    new_position.y = max(0., min(float(screen_height), new_position.y));
-    new_angle = random_generator(uint(current_time * gl_GlobalInvocationID.x)) * 6.282;
+    ((agent.position.x > screen_width) || (agent.position.x < 0)) ||
+    ((agent.position.y > screen_height) || (agent.position.y < 0))) {
+    agent.position.x = max(0., min(float(screen_width), agent.position.x));
+    agent.position.y = max(0., min(float(screen_height), agent.position.y));
+    agent.angle = random_generator(uint(current_time * gl_GlobalInvocationID.x)) * 6.282;
   }
 
   // update agent
-  agent.position = new_position;
-  agent.angle = new_angle;
   agents[gl_GlobalInvocationID.x] = agent;
+
   // update pixel
   ivec2 pixel_coord = ivec2(int(agent.position.x), int(agent.position.y));
   imageStore(trail_map, pixel_coord, agent.species_mask);
