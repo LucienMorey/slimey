@@ -6,6 +6,9 @@ struct Agent
   float angle;
   float padding_;
   vec4 species_mask;
+  float linear_speed;
+  float angular_speed;
+  vec2 padding2_;
 };
 layout(local_size_x = 1, local_size_y = 1) in;
 
@@ -14,7 +17,6 @@ layout(std430, binding = 1) buffer agent { Agent agents[]; };
 
 uniform int screen_width;
 uniform int screen_height;
-uniform float speed;
 uniform float delta_time;
 uniform float current_time;
 
@@ -43,7 +45,7 @@ void main()
   Agent agent = agents[gl_GlobalInvocationID.x];
 
   // determine velocity
-  vec2 velocity = speed * vec2(cos(agent.angle), sin(agent.angle));
+  vec2 velocity = agent.linear_speed * vec2(cos(agent.angle), sin(agent.angle));
 
   // determine new position
   vec2 new_position = agent.position + velocity * delta_time;
