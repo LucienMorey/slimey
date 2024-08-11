@@ -16,6 +16,7 @@
 #include <random>
 #include <simulation/agent.hpp>
 #include <sstream>
+#include <vector>
 
 void window_resize_callback(GLFWwindow * window, int width, int height)
 {
@@ -58,7 +59,7 @@ static std::array<std::array<GLuint, 3>, 2> indices = {{
 }};
 
 // simulation parameters
-constexpr uint32_t NUM_AGENTS = 500;
+constexpr uint32_t NUM_AGENTS = 5000;
 
 // agent parameters
 constexpr float LINEAR_SPEED = 30.0;
@@ -143,7 +144,7 @@ int main()
 
   std::random_device dev;
   std::uniform_real_distribution<double> dist(0.0, 1.0);
-  std::array<Slimey::Agent, NUM_AGENTS> agents;
+  std::vector<Slimey::Agent> agents(NUM_AGENTS);
   for (auto & agent : agents) {
     agent.position.x = dist(dev) * SCREEN_WIDTH;
     agent.position.y = dist(dev) * SCREEN_HEIGHT;
