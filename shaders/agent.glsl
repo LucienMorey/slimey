@@ -19,8 +19,6 @@ struct AgentSettings
   float sensor_offset;
 };
 
-layout(local_size_x = 1, local_size_y = 1) in;
-
 layout(rgba32f, binding = 0) uniform image2D trail_map;
 layout(std430, binding = 1) buffer Agents { Agent agents[]; };
 layout(std430, binding = 2) buffer Settings { AgentSettings agent_settings; };
@@ -77,6 +75,7 @@ float sense(Agent agent, float sensor_look_ahead, float sensor_offset, int senso
   return sum;
 }
 
+layout(local_size_x = 1024, local_size_y = 1, local_size_z = 1) in;
 void main()
 {
   float random = random_generator(uint(current_time * gl_GlobalInvocationID.x));

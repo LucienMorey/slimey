@@ -191,7 +191,7 @@ int main()
     agent_program.set_uniform_1i("screen_height", SCREEN_HEIGHT);
     agent_program.set_uniform_1f("delta_time", delta_time);
     agent_program.set_uniform_1f("current_time", current_time);
-    glDispatchCompute(NUM_AGENTS, 1, 1);
+    glDispatchCompute((NUM_AGENTS + 1024 - 1) / 1024, 1, 1);
     glMemoryBarrier(
       GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_DYNAMIC_STORAGE_BIT |
       GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
