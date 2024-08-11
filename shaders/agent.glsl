@@ -2,14 +2,16 @@
 
 struct Agent
 {
+  vec4 species_mask;
+
   vec2 position;
   float angle;
-  float padding_;
-  vec4 species_mask;
   float linear_speed;
+
   float angular_speed;
   int sensor_radius;
   float sensor_look_ahead;
+  float sensor_offset;
 };
 layout(local_size_x = 1, local_size_y = 1) in;
 
@@ -76,8 +78,8 @@ void main()
 
   // detect nearby agents to track
   float weight_forward = sense(agent, 0);
-  float weight_counter_clockwise = sense(agent, 3.141 / 6.0);
-  float weight_clockwise = sense(agent, -3.141 / 6.0);
+  float weight_counter_clockwise = sense(agent, agent.sensor_offset);
+  float weight_clockwise = sense(agent, -agent.sensor_offset);
 
   // turn to face discovered agents or try something new if none are around
   if ((weight_forward > weight_counter_clockwise) && (weight_forward > weight_clockwise)) {

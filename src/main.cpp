@@ -66,6 +66,7 @@ constexpr float ANGULAR_SPEED = M_PI / 3.0;
 constexpr glm::vec4 SPECIES_MASK = {1.0, 1.0, 1.0, 1.0};
 constexpr float SENSOR_LOOK_AHEAD = 35.0;
 constexpr int SENSOR_RADIUS = 1;
+constexpr float SENSOR_OFFSET = M_PI / 3.0;
 
 // trail parameters
 constexpr float EVAPORATION_RATE = 0.3;
@@ -152,6 +153,7 @@ int main()
     agent.angular_speed = ANGULAR_SPEED;
     agent.sensor_look_ahead = SENSOR_LOOK_AHEAD;
     agent.sensor_radius = SENSOR_RADIUS;
+    agent.sensor_offset = SENSOR_OFFSET;
   }
 
   GlWrapper::Buffer<Slimey::Agent> agent_buffer(agents);
