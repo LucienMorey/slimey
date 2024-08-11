@@ -24,6 +24,16 @@ public:
       GL_SHADER_STORAGE_BUFFER, buffer.size() * sizeof(T), buffer.data(), GL_DYNAMIC_DRAW);
   }
 
+  Buffer(const T & buffer)
+  {
+    // check lib types match inbuilt types
+    static_assert(sizeof(uint32_t) == sizeof(GLuint), "GLuint is expected to be 32bits in size");
+
+    glGenBuffers(1, &id_);
+    bind();
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(T), &buffer, GL_DYNAMIC_DRAW);
+  }
+
   ~Buffer() { glDeleteBuffers(1, &id_); }
   void bind() const { glBindBuffer(GL_SHADER_STORAGE_BUFFER, id_); }
   void set_binding_base(int32_t location)

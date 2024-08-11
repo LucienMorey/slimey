@@ -149,16 +149,22 @@ int main()
     agent.position.y = dist(dev) * SCREEN_HEIGHT;
     agent.angle = dist(dev) * 2 * M_PI;
     agent.species_mask = SPECIES_MASK;
-    agent.linear_speed = LINEAR_SPEED;
-    agent.angular_speed = ANGULAR_SPEED;
-    agent.sensor_look_ahead = SENSOR_LOOK_AHEAD;
-    agent.sensor_radius = SENSOR_RADIUS;
-    agent.sensor_offset = SENSOR_OFFSET;
   }
+
+  Slimey::AgentSettings agent_settings;
+  agent_settings.linear_speed = LINEAR_SPEED;
+  agent_settings.angular_speed = ANGULAR_SPEED;
+  agent_settings.sensor_look_ahead = SENSOR_LOOK_AHEAD;
+  agent_settings.sensor_radius = SENSOR_RADIUS;
+  agent_settings.sensor_offset = SENSOR_OFFSET;
 
   GlWrapper::Buffer<Slimey::Agent> agent_buffer(agents);
   agent_buffer.set_binding_base(1);
   agent_buffer.bind();
+
+  GlWrapper::Buffer<Slimey::AgentSettings> agent_settings_buffer(agent_settings);
+  agent_settings_buffer.set_binding_base(2);
+  agent_settings_buffer.bind();
 
   GlWrapper::Shader trail_shader(GL_COMPUTE_SHADER, read_text_from_file("shaders/trail.glsl"));
   if (!trail_shader.compile()) {
