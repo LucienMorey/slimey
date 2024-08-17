@@ -210,7 +210,7 @@ int main()
     program.bind();
     vertex_array.bind();
     index_buffer.bind();
-    glDrawElements(GL_TRIANGLES, index_buffer.get_verex_count(), GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, index_buffer.get_vertex_count(), GL_UNSIGNED_INT, nullptr);
     index_buffer.unbind();
     vertex_array.unbind();
     /* Swap front and back buffers */

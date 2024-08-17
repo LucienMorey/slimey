@@ -27,7 +27,7 @@ public:
   ~IndexBuffer() { glDeleteBuffers(1, &id_); }
   void bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id_); }
   void unbind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
-  uint32_t get_verex_count() const { return vertex_count_; }
+  uint32_t get_vertex_count() const { return vertex_count_; }
 
 private:
   uint32_t id_;
