@@ -23,7 +23,7 @@ layout(rgba32f, binding = 0) uniform image2D trail_map;
 layout(std430, binding = 1) buffer Agents { Agent agents[]; };
 layout(std430, binding = 2) buffer Settings { AgentSettings agent_settings; };
 
-uniform float delta_time;
+uniform float last_step_length;
 uniform float current_time;
 
 uint hash(uint state)
@@ -98,16 +98,16 @@ void main()
   if ((weight_forward > weight_counter_clockwise) && (weight_forward > weight_clockwise)) {
     agent.angle += 0.0;
   } else if (weight_counter_clockwise > weight_clockwise) {
-    agent.angle += random * agent_settings.angular_speed * delta_time;
+    agent.angle += random * agent_settings.angular_speed * last_step_length;
   } else {
-    agent.angle -= random * agent_settings.angular_speed * delta_time;
+    agent.angle -= random * agent_settings.angular_speed * last_step_length;
   }
 
   // determine velocity
   vec2 velocity = agent_settings.linear_speed * vec2(cos(agent.angle), sin(agent.angle));
 
   // determine new position
-  agent.position = agent.position + velocity * delta_time;
+  agent.position = agent.position + velocity * last_step_length;
 
   // clamp
   if (position_out_of_environment(agent.position, environment_dimensions)) {

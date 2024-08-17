@@ -7,7 +7,7 @@ layout(rgba32f, binding = 0) uniform image2D trail_map;
 uniform float evaporation_rate;
 uniform float diffuse_weight;
 uniform int diffuse_radius;
-uniform float delta_time;
+uniform float last_step_length;
 
 vec4 evaporate(vec4 pixel_colour, float reduction)
 {
@@ -47,7 +47,7 @@ void main()
   vec4 old_pixel_colour = imageLoad(trail_map, pixel_coord).rgba;
   vec4 blurred = blur(pixel_coord, diffuse_radius);
   vec4 diffused = old_pixel_colour * (1 - diffuse_weight) + blurred * diffuse_weight;
-  vec4 new_pixel_colour = evaporate(diffused, evaporation_rate * delta_time);
+  vec4 new_pixel_colour = evaporate(diffused, evaporation_rate * last_step_length);
 
   imageStore(trail_map, pixel_coord, new_pixel_colour);
 }

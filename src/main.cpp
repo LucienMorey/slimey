@@ -187,12 +187,12 @@ int main()
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
     auto current_time = std::chrono::steady_clock::now().time_since_epoch().count() / 1e9;
-    auto delta_time = (current_time - last_time);
+    auto last_step_length = (current_time - last_time);
     last_time = current_time;
 
     // Dispatch sim step
     agent_program.bind();
-    agent_program.set_uniform_1f("delta_time", delta_time);
+    agent_program.set_uniform_1f("last_step_length", last_step_length);
     agent_program.set_uniform_1f("current_time", current_time);
     glDispatchCompute((NUM_AGENTS + 1024 - 1) / 1024, 1, 1);
     glMemoryBarrier(
@@ -201,7 +201,7 @@ int main()
 
     // dispatch trail update
     trail_program.bind();
-    trail_program.set_uniform_1f("delta_time", delta_time);
+    trail_program.set_uniform_1f("last_step_length", last_step_length);
     glDispatchCompute(trail_map.get_width(), trail_map.get_height(), 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
