@@ -140,6 +140,7 @@ int main()
   agent_program.attach_shader(agent_shader);
   agent_program.link();
   agent_program.bind();
+  agent_program.set_uniform_1i("trail_map", trail_map.get_base_id());
 
   std::random_device dev;
   std::mt19937 gen(dev());
@@ -176,6 +177,10 @@ int main()
   trail_program.attach_shader(trail_shader);
   trail_program.link();
   trail_program.bind();
+  trail_program.set_uniform_1i("trail_map", trail_map.get_base_id());
+  trail_program.set_uniform_1f("evaporation_rate", EVAPORATION_RATE);
+  trail_program.set_uniform_1f("diffuse_weight", DIFFUSE_WEIGHT);
+  trail_program.set_uniform_1i("diffuse_radius", DIFFUSE_RADIUS);
 
   auto last_time = std::chrono::steady_clock::now().time_since_epoch().count() / 1e9;
 
@@ -187,7 +192,6 @@ int main()
 
     // Dispatch sim step
     agent_program.bind();
-    agent_buffer.bind();
     agent_program.set_uniform_1f("delta_time", delta_time);
     agent_program.set_uniform_1f("current_time", current_time);
     glDispatchCompute((NUM_AGENTS + 1024 - 1) / 1024, 1, 1);
@@ -197,10 +201,6 @@ int main()
 
     // dispatch trail update
     trail_program.bind();
-    trail_map.bind();
-    trail_program.set_uniform_1f("evaporation_rate", EVAPORATION_RATE);
-    trail_program.set_uniform_1f("diffuse_weight", DIFFUSE_WEIGHT);
-    trail_program.set_uniform_1i("diffuse_radius", DIFFUSE_RADIUS);
     trail_program.set_uniform_1f("delta_time", delta_time);
     glDispatchCompute(trail_map.get_width(), trail_map.get_height(), 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
