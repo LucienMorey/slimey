@@ -9,8 +9,6 @@ namespace GlWrapper
 class Shader
 {
 public:
-  Shader() = delete;
-
   Shader(const uint32_t type, const std::string & source)
   {
     static_assert(sizeof(uint32_t) == sizeof(GLuint), "GLuint is expected to be 32bits in size");
