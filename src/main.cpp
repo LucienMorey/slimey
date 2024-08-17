@@ -1,19 +1,9 @@
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <math.h>
 
 #include <chrono>
 #include <fstream>
-#include <gl_wrapper/buffer.hpp>
-#include <gl_wrapper/index_buffer.hpp>
-#include <gl_wrapper/shader.hpp>
-#include <gl_wrapper/shader_program.hpp>
-#include <gl_wrapper/texture2d32f.hpp>
-#include <gl_wrapper/vertex_array.hpp>
-#include <gl_wrapper/vertex_buffer.hpp>
 #include <glm/vec4.hpp>
 #include <iostream>
-#include <random>
 #include <simulation/agent.hpp>
 #include <simulation/renderer.hpp>
 #include <simulation/simulator.hpp>
