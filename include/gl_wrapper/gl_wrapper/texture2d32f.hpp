@@ -7,16 +7,16 @@
 namespace GlWrapper
 {
 
+template <size_t width, size_t height, uint32_t base>
 class Texture2d32f
 {
 public:
-  Texture2d32f() = delete;
-
-  Texture2d32f(uint32_t width, uint32_t height)
+  Texture2d32f()
   {
     // check lib types match inbuilt types
     static_assert(sizeof(uint32_t) == sizeof(GLuint), "GLuint is expected to be 32bits in size");
-    base_ = 0;
+    static_assert(base < 32, "binding base needs to be less than 32");
+    base_ = base;
     glGenTextures(1, &id_);
     bind();
     data_.resize(width * height * 4);
@@ -29,22 +29,14 @@ public:
 
   ~Texture2d32f() { glDeleteTextures(1, &id_); }
 
-  bool set_binding_base(const int32_t base)
-  {
-    if (base > 32) {
-      return false;
-    }
-
-    base_ = base;
-    return true;
-  }
-
   void bind() const
   {
     glActiveTexture(GL_TEXTURE0 + base_);
     glBindTexture(GL_TEXTURE_2D, id_);
   }
   void unbind() const { glBindTexture(GL_TEXTURE_2D, 0); }
+
+  uint32_t get_base_id() const { return base_; }
 
 private:
   uint32_t id_;

@@ -127,10 +127,9 @@ int main()
   program.link();
   program.bind();
 
-  GlWrapper::Texture2d32f trail_map(SCREEN_WIDTH, SCREEN_HEIGHT);
-  trail_map.set_binding_base(0);
+  GlWrapper::Texture2d32f<SCREEN_WIDTH, SCREEN_HEIGHT, 0> trail_map;
   trail_map.bind();
-  program.set_uniform_1i("trail_map", 0);
+  program.set_uniform_1i("trail_map", trail_map.get_base_id());
 
   GlWrapper::Shader agent_shader(GL_COMPUTE_SHADER, read_text_from_file("shaders/agent.glsl"));
   if (!agent_shader.compile()) {
