@@ -4,8 +4,6 @@ layout(local_size_x = 1, local_size_y = 1) in;
 
 layout(rgba32f, binding = 0) uniform image2D trail_map;
 
-uniform int screen_width;
-uniform int screen_height;
 uniform float evaporation_rate;
 uniform float diffuse_weight;
 uniform int diffuse_radius;
@@ -25,13 +23,14 @@ vec4 blur(ivec2 pixel_coord, int radius)
 {
   vec4 sum = vec4(0.0);
   float total_weight = 0.0;
+  ivec2 image_size = imageSize(trail_map);
   for (int offset_x = -radius; offset_x <= radius; offset_x++) {
     for (int offset_y = -radius; offset_y <= radius; offset_y++) {
       int sample_x = pixel_coord.x + offset_x;
       int sample_y = pixel_coord.y + offset_y;
       if (
-        (sample_x >= 0) && (sample_x <= screen_width) && (sample_y >= 0) &&
-        (sample_y <= screen_height)) {
+        (sample_x >= 0) && (sample_x <= image_size.x) && (sample_y >= 0) &&
+        (sample_y <= image_size.y)) {
         sum += imageLoad(trail_map, ivec2(sample_x, sample_y)).rgba;
         total_weight += 1.0;
       }

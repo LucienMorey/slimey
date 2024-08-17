@@ -199,8 +199,6 @@ int main()
 
     // dispatch trail update
     trail_program.bind();
-    trail_program.set_uniform_1i("screen_width", SCREEN_WIDTH);
-    trail_program.set_uniform_1i("screen_height", SCREEN_HEIGHT);
     trail_program.set_uniform_1f("evaporation_rate", EVAPORATION_RATE);
     trail_program.set_uniform_1f("diffuse_weight", DIFFUSE_WEIGHT);
     trail_program.set_uniform_1i("diffuse_radius", DIFFUSE_RADIUS);
