@@ -16,6 +16,8 @@ public:
     // check lib types match inbuilt types
     static_assert(sizeof(uint32_t) == sizeof(GLuint), "GLuint is expected to be 32bits in size");
     static_assert(base < 32, "binding base needs to be less than 32");
+    width_ = width;
+    height_ = height;
     base_ = base;
     glGenTextures(1, &id_);
     bind();
@@ -37,11 +39,15 @@ public:
   void unbind() const { glBindTexture(GL_TEXTURE_2D, 0); }
 
   uint32_t get_base_id() const { return base_; }
+  size_t get_width() const { return width_; }
+  size_t get_height() const { return height_; }
 
 private:
   uint32_t id_;
   uint32_t base_;
   std::vector<glm::vec4> data_;
+  size_t width_;
+  size_t height_;
 };
 
 };  // namespace GlWrapper

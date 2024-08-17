@@ -197,11 +197,12 @@ int main()
 
     // dispatch trail update
     trail_program.bind();
+    trail_map.bind();
     trail_program.set_uniform_1f("evaporation_rate", EVAPORATION_RATE);
     trail_program.set_uniform_1f("diffuse_weight", DIFFUSE_WEIGHT);
     trail_program.set_uniform_1i("diffuse_radius", DIFFUSE_RADIUS);
     trail_program.set_uniform_1f("delta_time", delta_time);
-    glDispatchCompute(SCREEN_WIDTH, SCREEN_HEIGHT, 1);
+    glDispatchCompute(trail_map.get_width(), trail_map.get_height(), 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     // Draw the vertex block
