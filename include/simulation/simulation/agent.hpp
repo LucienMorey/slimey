@@ -27,4 +27,11 @@ struct AgentSettings
   float sensor_offset;
 };
 
+struct TrailSettings
+{
+  float evaporation_rate;
+  float diffuse_weight;
+  float diffuse_radius;
+};
+
 };  // namespace Slimey

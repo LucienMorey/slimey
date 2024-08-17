@@ -93,6 +93,11 @@ int main()
   agent_settings.sensor_radius = SENSOR_RADIUS;
   agent_settings.sensor_offset = SENSOR_OFFSET;
 
+  Slimey::TrailSettings trail_settings;
+  trail_settings.evaporation_rate = EVAPORATION_RATE;
+  trail_settings.diffuse_weight = DIFFUSE_WEIGHT;
+  trail_settings.diffuse_radius = DIFFUSE_RADIUS;
+
   GlWrapper::Texture2d32f<SCREEN_WIDTH, SCREEN_HEIGHT, 0> trail_map;
   trail_map.bind();
 
@@ -147,9 +152,9 @@ int main()
   trail_program.link();
   trail_program.bind();
   trail_program.set_uniform_1i("trail_map", trail_map.get_base_id());
-  trail_program.set_uniform_1f("evaporation_rate", EVAPORATION_RATE);
-  trail_program.set_uniform_1f("diffuse_weight", DIFFUSE_WEIGHT);
-  trail_program.set_uniform_1i("diffuse_radius", DIFFUSE_RADIUS);
+  trail_program.set_uniform_1f("trail_settings.evaporation_rate", trail_settings.evaporation_rate);
+  trail_program.set_uniform_1f("trail_settings.diffuse_weight", trail_settings.diffuse_weight);
+  trail_program.set_uniform_1i("trail_settings.diffuse_radius", trail_settings.diffuse_radius);
 
   auto last_time = std::chrono::steady_clock::now().time_since_epoch().count() / 1e9;
 
