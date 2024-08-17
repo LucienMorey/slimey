@@ -22,7 +22,7 @@ std::string read_text_from_file(std::string file_path)
   return text.str();
 }
 
-void print_error_and_exit(const std::string_view & message, int exit_code)
+void print_error_and_exit(int exit_code, const std::string_view & message)
 {
   std::cerr << message << std::endl;
   exit(exit_code);
@@ -54,12 +54,12 @@ int main()
   Slimey::Window window;
   auto result = window.initialise(SCREEN_WIDTH, SCREEN_HEIGHT);
   if (result.first != 0) {
-    print_error_and_exit(result.second, result.first);
+    print_error_and_exit(result.first, result.second);
   }
 
   // initialise glew
   if (glewInit() != GLEW_OK) {
-    print_error_and_exit("cant init glew", -3);
+    print_error_and_exit(-3, "cant init glew");
   }
 
   Slimey::Simulator<SCREEN_WIDTH, SCREEN_HEIGHT, NUM_AGENTS> simulator;
@@ -68,7 +68,7 @@ int main()
     read_text_from_file("shaders/trail.glsl"));
 
   if (result.first != 0) {
-    print_error_and_exit(result.second, result.first);
+    print_error_and_exit(result.first, result.second);
   }
 
   Slimey::Rendering::Renderer renderer;
@@ -77,7 +77,7 @@ int main()
     read_text_from_file("shaders/vertex_shader.glsl"), simulator.get_trail_map_base());
 
   if (result.first != 0) {
-    print_error_and_exit(result.second, result.first);
+    print_error_and_exit(result.first, result.second);
   }
 
   double last_time = time_now();
