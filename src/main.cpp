@@ -188,8 +188,6 @@ int main()
     // Dispatch sim step
     agent_program.bind();
     agent_buffer.bind();
-    agent_program.set_uniform_1i("screen_width", SCREEN_WIDTH);
-    agent_program.set_uniform_1i("screen_height", SCREEN_HEIGHT);
     agent_program.set_uniform_1f("delta_time", delta_time);
     agent_program.set_uniform_1f("current_time", current_time);
     glDispatchCompute((NUM_AGENTS + 1024 - 1) / 1024, 1, 1);

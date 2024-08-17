@@ -23,8 +23,6 @@ layout(rgba32f, binding = 0) uniform image2D trail_map;
 layout(std430, binding = 1) buffer Agents { Agent agents[]; };
 layout(std430, binding = 2) buffer Settings { AgentSettings agent_settings; };
 
-uniform int screen_width;
-uniform int screen_height;
 uniform float delta_time;
 uniform float current_time;
 
@@ -47,14 +45,16 @@ float random_generator(uint seed)
   return scale_hash(hashed);
 }
 
-bool position_off_screen(vec2 position)
+bool position_out_of_environment(vec2 position, ivec2 environment_dimensions)
 {
   return (
-    ((position.x > screen_width) || (position.x < 0)) ||
-    ((position.y > screen_height) || (position.y < 0)));
+    ((position.x > environment_dimensions.x) || (position.x < 0)) ||
+    ((position.y > environment_dimensions.y) || (position.y < 0)));
 }
 
-float sense(Agent agent, float sensor_look_ahead, float sensor_offset, int sensor_radius)
+float sense(
+  Agent agent, float sensor_look_ahead, float sensor_offset, int sensor_radius,
+  ivec2 environment_dimensions)
 {
   vec2 sense_direction = vec2(cos(agent.angle + sensor_offset), sin(agent.angle + sensor_offset));
   vec2 sensor_location = agent.position + sense_direction * sensor_look_ahead;
@@ -64,7 +64,7 @@ float sense(Agent agent, float sensor_look_ahead, float sensor_offset, int senso
   for (int offset_x = -sensor_radius; offset_x <= sensor_radius; offset_x++) {
     for (int offset_y = -sensor_radius; offset_y <= sensor_radius; offset_y++) {
       vec2 tentative_sense_pos = sensor_location + vec2(offset_x, offset_y);
-      if (position_off_screen(tentative_sense_pos)) {
+      if (position_out_of_environment(tentative_sense_pos, environment_dimensions)) {
         continue;
       }
 
@@ -78,19 +78,21 @@ float sense(Agent agent, float sensor_look_ahead, float sensor_offset, int senso
 layout(local_size_x = 1024, local_size_y = 1, local_size_z = 1) in;
 void main()
 {
+  ivec2 environment_dimensions = imageSize(trail_map);
   float random = random_generator(uint(current_time * gl_GlobalInvocationID.x));
   // determine agent instance
   Agent agent = agents[gl_GlobalInvocationID.x];
 
   // detect nearby agents to track
-  float weight_forward =
-    sense(agent, agent_settings.sensor_look_ahead, 0, agent_settings.sensor_radius);
+  float weight_forward = sense(
+    agent, agent_settings.sensor_look_ahead, 0, agent_settings.sensor_radius,
+    environment_dimensions);
   float weight_counter_clockwise = sense(
     agent, agent_settings.sensor_look_ahead, agent_settings.sensor_offset,
-    agent_settings.sensor_radius);
+    agent_settings.sensor_radius, environment_dimensions);
   float weight_clockwise = sense(
     agent, agent_settings.sensor_look_ahead, -agent_settings.sensor_offset,
-    agent_settings.sensor_radius);
+    agent_settings.sensor_radius, environment_dimensions);
 
   // turn to face discovered agents or try something new if none are around
   if ((weight_forward > weight_counter_clockwise) && (weight_forward > weight_clockwise)) {
@@ -108,9 +110,9 @@ void main()
   agent.position = agent.position + velocity * delta_time;
 
   // clamp
-  if (position_off_screen(agent.position)) {
-    agent.position.x = max(0., min(float(screen_width), agent.position.x));
-    agent.position.y = max(0., min(float(screen_height), agent.position.y));
+  if (position_out_of_environment(agent.position, environment_dimensions)) {
+    agent.position.x = max(0., min(float(environment_dimensions.x), agent.position.x));
+    agent.position.y = max(0., min(float(environment_dimensions.y), agent.position.y));
     agent.angle = random * 6.282;
   }
 
