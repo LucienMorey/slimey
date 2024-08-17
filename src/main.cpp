@@ -48,17 +48,18 @@ constexpr int32_t SCREEN_HEIGHT = 480;
 constexpr uint32_t NUM_AGENTS = 5000;
 
 // agent parameters
-constexpr float LINEAR_SPEED = 30.0;
-constexpr float ANGULAR_SPEED = M_PI / 3.0;
+constexpr Slimey::AgentSettings agent_settings{
+  .linear_speed = 30.0,
+  .angular_speed = M_PI / 3.0,
+  .sensor_radius = 1,
+  .sensor_look_ahead = 35.0,
+  .sensor_offset = M_PI / 3.0};
+
 constexpr glm::vec4 SPECIES_MASK = {1.0, 1.0, 1.0, 1.0};
-constexpr float SENSOR_LOOK_AHEAD = 35.0;
-constexpr int SENSOR_RADIUS = 1;
-constexpr float SENSOR_OFFSET = M_PI / 3.0;
 
 // trail parameters
-constexpr float EVAPORATION_RATE = 0.3;
-constexpr float DIFFUSE_WEIGHT = 0.08;
-constexpr int DIFFUSE_RADIUS = 1;
+constexpr Slimey::TrailSettings trail_settings = {
+  .evaporation_rate = 0.3, .diffuse_weight = 0.08, .diffuse_radius = 1};
 
 int main()
 {
@@ -86,18 +87,6 @@ int main()
   if (glewInit() != GLEW_OK) {
     print_error_and_exit("cant init glew", -3);
   }
-
-  Slimey::AgentSettings agent_settings;
-  agent_settings.linear_speed = LINEAR_SPEED;
-  agent_settings.angular_speed = ANGULAR_SPEED;
-  agent_settings.sensor_look_ahead = SENSOR_LOOK_AHEAD;
-  agent_settings.sensor_radius = SENSOR_RADIUS;
-  agent_settings.sensor_offset = SENSOR_OFFSET;
-
-  Slimey::TrailSettings trail_settings;
-  trail_settings.evaporation_rate = EVAPORATION_RATE;
-  trail_settings.diffuse_weight = DIFFUSE_WEIGHT;
-  trail_settings.diffuse_radius = DIFFUSE_RADIUS;
 
   Slimey::Simulator<SCREEN_WIDTH, SCREEN_HEIGHT, NUM_AGENTS> simulator;
   auto result = simulator.initialise(
