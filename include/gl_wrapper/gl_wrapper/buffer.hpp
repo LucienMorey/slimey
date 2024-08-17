@@ -11,8 +11,6 @@ template <class T>
 class Buffer
 {
 public:
-  Buffer() = delete;
-
   Buffer(const std::span<T> buffer)
   {
     // check lib types match inbuilt types

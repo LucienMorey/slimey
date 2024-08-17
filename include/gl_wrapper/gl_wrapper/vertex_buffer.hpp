@@ -12,8 +12,6 @@ template <class T>
 class VertexBuffer
 {
 public:
-  VertexBuffer() = delete;
-
   VertexBuffer(const std::span<T> buffer)
   {
     // check lib types match inbuilt types

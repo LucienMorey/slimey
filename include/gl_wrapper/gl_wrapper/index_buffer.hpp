@@ -11,8 +11,6 @@ namespace GlWrapper
 class IndexBuffer
 {
 public:
-  IndexBuffer() = delete;
-
   IndexBuffer(const std::span<std::array<uint32_t, 3>> buffer)
   {
     // check lib types match inbuilt types
