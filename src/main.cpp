@@ -86,6 +86,13 @@ int main()
     print_error_and_exit("cant init glew", -3);
   }
 
+  Slimey::AgentSettings agent_settings;
+  agent_settings.linear_speed = LINEAR_SPEED;
+  agent_settings.angular_speed = ANGULAR_SPEED;
+  agent_settings.sensor_look_ahead = SENSOR_LOOK_AHEAD;
+  agent_settings.sensor_radius = SENSOR_RADIUS;
+  agent_settings.sensor_offset = SENSOR_OFFSET;
+
   GlWrapper::Texture2d32f<SCREEN_WIDTH, SCREEN_HEIGHT, 0> trail_map;
   trail_map.bind();
 
@@ -108,6 +115,12 @@ int main()
   agent_program.link();
   agent_program.bind();
   agent_program.set_uniform_1i("trail_map", trail_map.get_base_id());
+  agent_program.set_uniform_1f("agent_settings.linear_speed", agent_settings.linear_speed);
+  agent_program.set_uniform_1f("agent_settings.angular_speed", agent_settings.angular_speed);
+  agent_program.set_uniform_1i("agent_settings.sensor_radius", agent_settings.sensor_radius);
+  agent_program.set_uniform_1f(
+    "agent_settings.sensor_look_ahead", agent_settings.sensor_look_ahead);
+  agent_program.set_uniform_1f("agent_settings.sensor_offset", agent_settings.sensor_offset);
 
   std::random_device dev;
   std::mt19937 gen(dev());
@@ -120,20 +133,9 @@ int main()
     agent.species_mask = SPECIES_MASK;
   }
 
-  Slimey::AgentSettings agent_settings;
-  agent_settings.linear_speed = LINEAR_SPEED;
-  agent_settings.angular_speed = ANGULAR_SPEED;
-  agent_settings.sensor_look_ahead = SENSOR_LOOK_AHEAD;
-  agent_settings.sensor_radius = SENSOR_RADIUS;
-  agent_settings.sensor_offset = SENSOR_OFFSET;
-
   GlWrapper::Buffer<Slimey::Agent> agent_buffer(agents);
   agent_buffer.set_binding_base(1);
   agent_buffer.bind();
-
-  GlWrapper::Buffer<Slimey::AgentSettings> agent_settings_buffer(agent_settings);
-  agent_settings_buffer.set_binding_base(2);
-  agent_settings_buffer.bind();
 
   GlWrapper::Shader trail_shader(GL_COMPUTE_SHADER, read_text_from_file("shaders/trail.glsl"));
   if (!trail_shader.compile()) {

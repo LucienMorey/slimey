@@ -21,8 +21,8 @@ struct AgentSettings
 
 layout(rgba32f, binding = 0) uniform image2D trail_map;
 layout(std430, binding = 1) buffer Agents { Agent agents[]; };
-layout(std430, binding = 2) buffer Settings { AgentSettings agent_settings; };
 
+uniform AgentSettings agent_settings;
 uniform float last_step_length;
 uniform float current_time;
 
