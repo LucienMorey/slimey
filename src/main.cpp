@@ -11,6 +11,9 @@
 #include <sstream>
 #include <vector>
 
+using Clock = std::chrono::steady_clock;
+double time_now() { return Clock::now().time_since_epoch().count() / 1e9; }
+
 std::string read_text_from_file(std::string file_path)
 {
   std::ifstream file(file_path);
@@ -77,12 +80,12 @@ int main()
     print_error_and_exit(result.second, result.first);
   }
 
-  auto last_time = std::chrono::steady_clock::now().time_since_epoch().count() / 1e9;
+  double last_time = time_now();
 
   /* Loop until the user closes the window */
   while (!window.should_close()) {
-    auto current_time = std::chrono::steady_clock::now().time_since_epoch().count() / 1e9;
-    auto last_step_length = (current_time - last_time);
+    double current_time = time_now();
+    double last_step_length = current_time - last_time;
     last_time = current_time;
 
     simulator.step(current_time, last_step_length);
