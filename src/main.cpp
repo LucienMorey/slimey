@@ -16,6 +16,7 @@
 #include <random>
 #include <simulation/agent.hpp>
 #include <simulation/renderer.hpp>
+#include <simulation/simulator.hpp>
 #include <sstream>
 #include <vector>
 
@@ -98,63 +99,23 @@ int main()
   trail_settings.diffuse_weight = DIFFUSE_WEIGHT;
   trail_settings.diffuse_radius = DIFFUSE_RADIUS;
 
-  GlWrapper::Texture2d32f<SCREEN_WIDTH, SCREEN_HEIGHT, 0> trail_map;
-  trail_map.bind();
-
-  Slimey::Rendering::Renderer renderer;
-  auto result = renderer.initialise(
-    read_text_from_file("shaders/fragment_shader.glsl"),
-    read_text_from_file("shaders/vertex_shader.glsl"), trail_map.get_base_id());
+  Slimey::Simulator<SCREEN_WIDTH, SCREEN_HEIGHT, NUM_AGENTS> simulator;
+  auto result = simulator.initialise(
+    agent_settings, trail_settings, read_text_from_file("shaders/agent.glsl"),
+    read_text_from_file("shaders/trail.glsl"));
 
   if (result.first != 0) {
     print_error_and_exit(result.second, result.first);
   }
 
-  GlWrapper::Shader agent_shader(GL_COMPUTE_SHADER, read_text_from_file("shaders/agent.glsl"));
-  if (!agent_shader.compile()) {
-    print_error_and_exit(agent_shader.get_compilation_log(), -6);
+  Slimey::Rendering::Renderer renderer;
+  result = renderer.initialise(
+    read_text_from_file("shaders/fragment_shader.glsl"),
+    read_text_from_file("shaders/vertex_shader.glsl"), simulator.get_trail_map_base());
+
+  if (result.first != 0) {
+    print_error_and_exit(result.second, result.first);
   }
-
-  GlWrapper::ShaderProgram agent_program;
-  agent_program.attach_shader(agent_shader);
-  agent_program.link();
-  agent_program.bind();
-  agent_program.set_uniform_1i("trail_map", trail_map.get_base_id());
-  agent_program.set_uniform_1f("agent_settings.linear_speed", agent_settings.linear_speed);
-  agent_program.set_uniform_1f("agent_settings.angular_speed", agent_settings.angular_speed);
-  agent_program.set_uniform_1i("agent_settings.sensor_radius", agent_settings.sensor_radius);
-  agent_program.set_uniform_1f(
-    "agent_settings.sensor_look_ahead", agent_settings.sensor_look_ahead);
-  agent_program.set_uniform_1f("agent_settings.sensor_offset", agent_settings.sensor_offset);
-
-  std::random_device dev;
-  std::mt19937 gen(dev());
-  std::uniform_real_distribution<double> dist(0.0, 1.0);
-  std::vector<Slimey::Agent> agents(NUM_AGENTS);
-  for (auto & agent : agents) {
-    agent.position.x = dist(gen) * SCREEN_WIDTH;
-    agent.position.y = dist(gen) * SCREEN_HEIGHT;
-    agent.angle = dist(gen) * 2 * M_PI;
-    agent.species_mask = SPECIES_MASK;
-  }
-
-  GlWrapper::Buffer<Slimey::Agent> agent_buffer(agents);
-  agent_buffer.set_binding_base(1);
-  agent_buffer.bind();
-
-  GlWrapper::Shader trail_shader(GL_COMPUTE_SHADER, read_text_from_file("shaders/trail.glsl"));
-  if (!trail_shader.compile()) {
-    print_error_and_exit(trail_shader.get_compilation_log(), -7);
-  }
-
-  GlWrapper::ShaderProgram trail_program;
-  trail_program.attach_shader(trail_shader);
-  trail_program.link();
-  trail_program.bind();
-  trail_program.set_uniform_1i("trail_map", trail_map.get_base_id());
-  trail_program.set_uniform_1f("trail_settings.evaporation_rate", trail_settings.evaporation_rate);
-  trail_program.set_uniform_1f("trail_settings.diffuse_weight", trail_settings.diffuse_weight);
-  trail_program.set_uniform_1i("trail_settings.diffuse_radius", trail_settings.diffuse_radius);
 
   auto last_time = std::chrono::steady_clock::now().time_since_epoch().count() / 1e9;
 
@@ -164,20 +125,7 @@ int main()
     auto last_step_length = (current_time - last_time);
     last_time = current_time;
 
-    // Dispatch sim step
-    agent_program.bind();
-    agent_program.set_uniform_1f("last_step_length", last_step_length);
-    agent_program.set_uniform_1f("current_time", current_time);
-    glDispatchCompute((NUM_AGENTS + 1024 - 1) / 1024, 1, 1);
-    glMemoryBarrier(
-      GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_DYNAMIC_STORAGE_BIT |
-      GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
-
-    // dispatch trail update
-    trail_program.bind();
-    trail_program.set_uniform_1f("last_step_length", last_step_length);
-    glDispatchCompute(trail_map.get_width(), trail_map.get_height(), 1);
-    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+    simulator.step(current_time, last_step_length);
 
     renderer.draw();
 
