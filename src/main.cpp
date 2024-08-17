@@ -17,14 +17,9 @@
 #include <simulation/agent.hpp>
 #include <simulation/renderer.hpp>
 #include <simulation/simulator.hpp>
+#include <simulation/window.hpp>
 #include <sstream>
 #include <vector>
-
-void window_resize_callback(GLFWwindow * window, int width, int height)
-{
-  (void)window;
-  glViewport(0, 0, width, height);
-}
 
 std::string read_text_from_file(std::string file_path)
 {
@@ -63,25 +58,11 @@ constexpr Slimey::TrailSettings trail_settings = {
 
 int main()
 {
-  /* Initialize the library */
-  if (!glfwInit()) {
-    print_error_and_exit("cant init glfw", -1);
+  Slimey::Window window;
+  auto result = window.initialise(SCREEN_WIDTH, SCREEN_HEIGHT);
+  if (result.first != 0) {
+    print_error_and_exit(result.second, result.first);
   }
-
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  /* Create a windowed mode window and its OpenGL context */
-  GLFWwindow * window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello World", NULL, NULL);
-  if (!window) {
-    glfwTerminate();
-    print_error_and_exit("Could not create window", -2);
-  }
-
-  /* Make the window's context current */
-  glfwMakeContextCurrent(window);
-
-  glfwSetFramebufferSizeCallback(window, window_resize_callback);
 
   // initialise glew
   if (glewInit() != GLEW_OK) {
@@ -89,7 +70,7 @@ int main()
   }
 
   Slimey::Simulator<SCREEN_WIDTH, SCREEN_HEIGHT, NUM_AGENTS> simulator;
-  auto result = simulator.initialise(
+  result = simulator.initialise(
     agent_settings, trail_settings, read_text_from_file("shaders/agent.glsl"),
     read_text_from_file("shaders/trail.glsl"));
 
@@ -109,7 +90,7 @@ int main()
   auto last_time = std::chrono::steady_clock::now().time_since_epoch().count() / 1e9;
 
   /* Loop until the user closes the window */
-  while (!glfwWindowShouldClose(window)) {
+  while (!window.should_close()) {
     auto current_time = std::chrono::steady_clock::now().time_since_epoch().count() / 1e9;
     auto last_step_length = (current_time - last_time);
     last_time = current_time;
@@ -118,13 +99,8 @@ int main()
 
     renderer.draw();
 
-    /* Swap front and back buffers */
-    glfwSwapBuffers(window);
-
-    /* Poll for and process events */
-    glfwPollEvents();
+    window.update();
   }
 
-  glfwTerminate();
   return 0;
 }
