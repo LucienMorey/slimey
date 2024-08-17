@@ -15,6 +15,7 @@
 #include <iostream>
 #include <random>
 #include <simulation/agent.hpp>
+#include <simulation/renderer.hpp>
 #include <sstream>
 #include <vector>
 
@@ -41,22 +42,6 @@ void print_error_and_exit(const std::string_view & message, int exit_code)
 // Window Context parameters
 constexpr int32_t SCREEN_WIDTH = 640;
 constexpr int32_t SCREEN_HEIGHT = 480;
-
-// An array of 4 vectors which represents 4 vertices.
-// In this situation the vertex specification is just
-// position on the screen relative to the centre of a window context
-static std::array<GLfloat, 8> vertices = {
-  -1.0f, -1.0f,  // 0
-  1.0f,  -1.0f,  // 1
-  1.0f,  1.0f,   // 2
-  -1.0f, 1.0f    // 3
-};
-
-// an array specifying which vertices will be used in the graphics triangle polygons
-static std::array<std::array<GLuint, 3>, 2> indices = {{
-  {0, 1, 2},  //0
-  {2, 3, 0}   //1
-}};
 
 // simulation parameters
 constexpr uint32_t NUM_AGENTS = 5000;
@@ -101,35 +86,17 @@ int main()
     print_error_and_exit("cant init glew", -3);
   }
 
-  GlWrapper::VertexBuffer<GLfloat> vertex_buffer(vertices);
-  vertex_buffer.get_layout().append<float>(2);
-
-  GlWrapper::VertexArray<GLfloat> vertex_array;
-  vertex_array.set_buffer(vertex_buffer);
-
-  GlWrapper::IndexBuffer index_buffer(indices);
-
-  GlWrapper::Shader fragment_shader(
-    GL_FRAGMENT_SHADER, read_text_from_file("shaders/fragment_shader.glsl"));
-  if (!fragment_shader.compile()) {
-    print_error_and_exit(fragment_shader.get_compilation_log(), -4);
-  }
-
-  GlWrapper::Shader vertex_shader(
-    GL_VERTEX_SHADER, read_text_from_file("shaders/vertex_shader.glsl"));
-  if (!vertex_shader.compile()) {
-    print_error_and_exit(vertex_shader.get_compilation_log(), -5);
-  }
-
-  GlWrapper::ShaderProgram program;
-  program.attach_shader(fragment_shader);
-  program.attach_shader(vertex_shader);
-  program.link();
-  program.bind();
-
   GlWrapper::Texture2d32f<SCREEN_WIDTH, SCREEN_HEIGHT, 0> trail_map;
   trail_map.bind();
-  program.set_uniform_1i("trail_map", trail_map.get_base_id());
+
+  Slimey::Rendering::Renderer renderer;
+  auto result = renderer.initialise(
+    read_text_from_file("shaders/fragment_shader.glsl"),
+    read_text_from_file("shaders/vertex_shader.glsl"), trail_map.get_base_id());
+
+  if (result.first != 0) {
+    print_error_and_exit(result.second, result.first);
+  }
 
   GlWrapper::Shader agent_shader(GL_COMPUTE_SHADER, read_text_from_file("shaders/agent.glsl"));
   if (!agent_shader.compile()) {
@@ -205,14 +172,8 @@ int main()
     glDispatchCompute(trail_map.get_width(), trail_map.get_height(), 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-    // Draw the vertex block
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    program.bind();
-    vertex_array.bind();
-    index_buffer.bind();
-    glDrawElements(GL_TRIANGLES, index_buffer.get_vertex_count(), GL_UNSIGNED_INT, nullptr);
-    index_buffer.unbind();
-    vertex_array.unbind();
+    renderer.draw();
+
     /* Swap front and back buffers */
     glfwSwapBuffers(window);
 
