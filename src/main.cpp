@@ -11,6 +11,8 @@
 #include <sstream>
 #include <vector>
 
+using Slimey::Simulation::SpawnMode;
+
 using Clock = std::chrono::steady_clock;
 double time_now() { return Clock::now().time_since_epoch().count() / 1e9; }
 
@@ -29,11 +31,12 @@ void print_error_and_exit(int exit_code, const std::string_view & message)
 }
 
 // Window Context parameters
-constexpr int32_t SCREEN_WIDTH = 640;
-constexpr int32_t SCREEN_HEIGHT = 480;
+constexpr int32_t SCREEN_WIDTH = 2560;
+constexpr int32_t SCREEN_HEIGHT = 1440;
 
 // simulation parameters
-constexpr uint32_t NUM_AGENTS = 5000;
+constexpr uint32_t NUM_AGENTS = 500000;
+constexpr SpawnMode spawn_mode = SpawnMode::CIRCULAR;
 
 // agent parameters
 constexpr Slimey::AgentSettings agent_settings{
@@ -62,9 +65,9 @@ int main()
     print_error_and_exit(-3, "cant init glew");
   }
 
-  Slimey::Simulator<SCREEN_WIDTH, SCREEN_HEIGHT, NUM_AGENTS> simulator;
+  Slimey::Simulation::Simulator<SCREEN_WIDTH, SCREEN_HEIGHT, NUM_AGENTS> simulator;
   result = simulator.initialise(
-    agent_settings, trail_settings, read_text_from_file("shaders/agent.glsl"),
+    agent_settings, trail_settings, spawn_mode, read_text_from_file("shaders/agent.glsl"),
     read_text_from_file("shaders/trail.glsl"));
 
   if (result.first != 0) {
