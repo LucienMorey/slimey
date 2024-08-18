@@ -23,6 +23,7 @@ enum class SpawnMode
 {
   FILL = 0,
   CIRCULAR,
+  CENTRE
 };
 
 template <size_t width, size_t height, uint32_t agent_count>
@@ -115,17 +116,16 @@ private:
     std::mt19937 gen(dev());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
     switch (spawn_mode) {
-      case SpawnMode::FILL:
-
+      case SpawnMode::FILL: {
         for (auto & agent : agents_) {
           agent.position.x = dist(gen) * width;
           agent.position.y = dist(gen) * height;
           agent.angle = dist(gen) * 2 * M_PI;
           agent.species_mask = {1.0, 1.0, 1.0, 1.0};
         }
-        break;
-      case SpawnMode::CIRCULAR:
+      } break;
 
+      case SpawnMode::CIRCULAR: {
         float centre_x = width_ / 2.0;
         float centre_y = height_ / 2.0;
         float max_radius = 0.75 * std::min(centre_x, centre_y);
@@ -139,7 +139,19 @@ private:
           agent.angle = dist(gen) * 2 * M_PI;
           agent.species_mask = {1.0, 0.6, 0.0, 1.0};
         }
-        break;
+      } break;
+
+      case SpawnMode::CENTRE: {
+        float centre_x = width_ / 2.0;
+        float centre_y = height_ / 2.0;
+
+        for (auto & agent : agents_) {
+          agent.position.x = centre_x;
+          agent.position.y = centre_y;
+          agent.angle = dist(gen) * 2 * M_PI;
+          agent.species_mask = {1.0, 0.6, 0.0, 1.0};
+        }
+      } break;
     }
   }
   GlWrapper::Texture2d32f<width, height, 0> trail_map_;

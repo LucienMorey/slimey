@@ -36,7 +36,7 @@ constexpr int32_t SCREEN_HEIGHT = 1440;
 
 // simulation parameters
 constexpr uint32_t NUM_AGENTS = 500000;
-constexpr SpawnMode spawn_mode = SpawnMode::CIRCULAR;
+constexpr SpawnMode spawn_mode = SpawnMode::CENTRE;
 
 // agent parameters
 constexpr Slimey::AgentSettings agent_settings{
