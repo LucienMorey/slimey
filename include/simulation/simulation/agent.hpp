@@ -11,6 +11,7 @@ namespace Slimey
 struct Agent
 {
   glm::vec4 species_mask;
+  glm::vec4 species_colour;
 
   glm::vec2 position;
   float angle;
