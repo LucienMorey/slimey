@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <gl_wrapper/buffer.hpp>
 #include <gl_wrapper/shader_program.hpp>
 #include <gl_wrapper/texture2d32f.hpp>
@@ -14,6 +15,17 @@
 
 namespace Slimey
 {
+
+namespace Simulation
+{
+
+enum class SpawnMode
+{
+  FILL = 0,
+  CIRCULAR,
+  CENTRE
+};
+
 template <size_t width, size_t height, uint32_t agent_count>
 class Simulator
 {
@@ -27,19 +39,10 @@ public:
   {
   }
   std::pair<int32_t, std::string> initialise(
-    const AgentSettings agent_settings, const TrailSettings trail_settings,
+    const AgentSettings agent_settings, const TrailSettings trail_settings, SpawnMode spawn_mode,
     const std::string & agent_shader_code, const std::string & trail_shader_code)
   {
-    // generate agents
-    std::random_device dev;
-    std::mt19937 gen(dev());
-    std::uniform_real_distribution<double> dist(0.0, 1.0);
-    for (auto & agent : agents_) {
-      agent.position.x = dist(gen) * width;
-      agent.position.y = dist(gen) * height;
-      agent.angle = dist(gen) * 2 * M_PI;
-      agent.species_mask = {1.0, 1.0, 1.0, 1.0};
-    }
+    spawn_agents(spawn_mode);
 
     GlWrapper::Shader agent_shader(GL_COMPUTE_SHADER, agent_shader_code);
     if (!agent_shader.compile()) {
@@ -106,6 +109,51 @@ public:
   int32_t get_trail_map_base() { return trail_map_.get_base_id(); }
 
 private:
+  void spawn_agents(SpawnMode spawn_mode)
+  {
+    // generate agents
+    std::random_device dev;
+    std::mt19937 gen(dev());
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
+    switch (spawn_mode) {
+      case SpawnMode::FILL: {
+        for (auto & agent : agents_) {
+          agent.position.x = dist(gen) * width;
+          agent.position.y = dist(gen) * height;
+          agent.angle = dist(gen) * 2 * M_PI;
+          agent.species_mask = {1.0, 1.0, 1.0, 1.0};
+        }
+      } break;
+
+      case SpawnMode::CIRCULAR: {
+        float centre_x = width_ / 2.0;
+        float centre_y = height_ / 2.0;
+        float max_radius = 0.75 * std::min(centre_x, centre_y);
+
+        for (auto & agent : agents_) {
+          float theta = dist(gen) * 2 * M_PI;
+          float radius = dist(gen) * max_radius;
+
+          agent.position.x = centre_x + radius * cos(theta);
+          agent.position.y = centre_y + radius * sin(theta);
+          agent.angle = dist(gen) * 2 * M_PI;
+          agent.species_mask = {1.0, 0.6, 0.0, 1.0};
+        }
+      } break;
+
+      case SpawnMode::CENTRE: {
+        float centre_x = width_ / 2.0;
+        float centre_y = height_ / 2.0;
+
+        for (auto & agent : agents_) {
+          agent.position.x = centre_x;
+          agent.position.y = centre_y;
+          agent.angle = dist(gen) * 2 * M_PI;
+          agent.species_mask = {1.0, 0.6, 0.0, 1.0};
+        }
+      } break;
+    }
+  }
   GlWrapper::Texture2d32f<width, height, 0> trail_map_;
   GlWrapper::ShaderProgram agent_program_;
   GlWrapper::ShaderProgram trail_program_;
@@ -115,4 +163,6 @@ private:
   bool initialised_;
   GlWrapper::Buffer<Slimey::Agent> * agent_buffer_;
 };
+
+};  // namespace Simulation
 }  // namespace Slimey
