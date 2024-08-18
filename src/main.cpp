@@ -2,7 +2,7 @@
 
 #include <chrono>
 #include <fstream>
-#include <glm/vec4.hpp>
+#include <glm/vec3.hpp>
 #include <iostream>
 #include <simulation/agent.hpp>
 #include <simulation/renderer.hpp>
@@ -36,7 +36,7 @@ constexpr int32_t SCREEN_HEIGHT = 1440;
 
 // simulation parameters
 constexpr uint32_t NUM_AGENTS = 500000;
-constexpr SpawnMode spawn_mode = SpawnMode::CENTRE;
+constexpr SpawnMode SPAWN_MODE = SpawnMode::CIRCULAR;
 
 // agent parameters
 constexpr Slimey::AgentSettings agent_settings{
@@ -46,7 +46,8 @@ constexpr Slimey::AgentSettings agent_settings{
   .sensor_look_ahead = 35.0,
   .sensor_offset = M_PI / 3.0};
 
-constexpr glm::vec4 SPECIES_MASK = {1.0, 1.0, 1.0, 1.0};
+// The colour and number of species is defined here. the colour mode is rgb. There cannot be more than 4 species
+const std::vector<glm::vec3> SPECIES_COLOURS = {{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}};
 
 // trail parameters
 constexpr Slimey::TrailSettings trail_settings = {
@@ -54,6 +55,10 @@ constexpr Slimey::TrailSettings trail_settings = {
 
 int main()
 {
+  if (SPECIES_COLOURS.size() > 4) {
+    print_error_and_exit(-7, "The simulation doesnt support more than 4 species at once");
+  }
+
   Slimey::Window window;
   auto result = window.initialise(SCREEN_WIDTH, SCREEN_HEIGHT);
   if (result.first != 0) {
@@ -67,8 +72,8 @@ int main()
 
   Slimey::Simulation::Simulator<SCREEN_WIDTH, SCREEN_HEIGHT, NUM_AGENTS> simulator;
   result = simulator.initialise(
-    agent_settings, trail_settings, spawn_mode, read_text_from_file("shaders/agent.glsl"),
-    read_text_from_file("shaders/trail.glsl"));
+    agent_settings, trail_settings, SPAWN_MODE, SPECIES_COLOURS,
+    read_text_from_file("shaders/agent.glsl"), read_text_from_file("shaders/trail.glsl"));
 
   if (result.first != 0) {
     print_error_and_exit(result.first, result.second);

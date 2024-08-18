@@ -3,6 +3,7 @@
 struct Agent
 {
   vec4 species_mask;
+  vec4 species_colour;
 
   vec2 position;
   float angle;
@@ -121,5 +122,5 @@ void main()
 
   // update pixel
   ivec2 pixel_coord = ivec2(int(agent.position.x), int(agent.position.y));
-  imageStore(trail_map, pixel_coord, agent.species_mask);
+  imageStore(trail_map, pixel_coord, agent.species_colour);
 }

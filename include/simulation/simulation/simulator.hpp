@@ -6,6 +6,7 @@
 #include <gl_wrapper/buffer.hpp>
 #include <gl_wrapper/shader_program.hpp>
 #include <gl_wrapper/texture2d32f.hpp>
+#include <glm/vec3.hpp>
 #include <random>
 #include <simulation/agent.hpp>
 #include <string>
@@ -40,9 +41,10 @@ public:
   }
   std::pair<int32_t, std::string> initialise(
     const AgentSettings agent_settings, const TrailSettings trail_settings, SpawnMode spawn_mode,
-    const std::string & agent_shader_code, const std::string & trail_shader_code)
+    std::vector<glm::vec3> species_colours, const std::string & agent_shader_code,
+    const std::string & trail_shader_code)
   {
-    spawn_agents(spawn_mode);
+    spawn_agents(spawn_mode, species_colours);
 
     GlWrapper::Shader agent_shader(GL_COMPUTE_SHADER, agent_shader_code);
     if (!agent_shader.compile()) {
@@ -109,19 +111,43 @@ public:
   int32_t get_trail_map_base() { return trail_map_.get_base_id(); }
 
 private:
-  void spawn_agents(SpawnMode spawn_mode)
+  glm::vec4 generate_species_mask(uint32_t species_number)
+  {
+    switch (species_number) {
+      case 1: {
+        return {1.0, 0.0, 0.0, 0.0};
+      } break;
+
+      case 2: {
+        return {0.0, 1.0, 0.0, 0.0};
+      } break;
+
+      case 3: {
+        return {0.0, 0.0, 1.0, 0.0};
+      } break;
+
+      default: {
+        return {0.0, 0.0, 0.0, 1.0};
+      } break;
+    }
+  }
+
+  void spawn_agents(SpawnMode spawn_mode, std::vector<glm::vec3> species_colours)
   {
     // generate agents
     std::random_device dev;
     std::mt19937 gen(dev());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
+    std::uniform_int_distribution<uint32_t> species_dist(1, species_colours.size());
     switch (spawn_mode) {
       case SpawnMode::FILL: {
         for (auto & agent : agents_) {
           agent.position.x = dist(gen) * width;
           agent.position.y = dist(gen) * height;
           agent.angle = dist(gen) * 2 * M_PI;
-          agent.species_mask = {1.0, 1.0, 1.0, 1.0};
+          uint32_t species_number = species_dist(gen);
+          agent.species_mask = generate_species_mask(species_number);
+          agent.species_colour = glm::vec4(species_colours.at(species_number - 1), 1.0);
         }
       } break;
 
@@ -137,7 +163,9 @@ private:
           agent.position.x = centre_x + radius * cos(theta);
           agent.position.y = centre_y + radius * sin(theta);
           agent.angle = dist(gen) * 2 * M_PI;
-          agent.species_mask = {1.0, 0.6, 0.0, 1.0};
+          uint32_t species_number = species_dist(gen);
+          agent.species_mask = generate_species_mask(species_number);
+          agent.species_colour = glm::vec4(species_colours.at(species_number - 1), 1.0);
         }
       } break;
 
@@ -149,7 +177,9 @@ private:
           agent.position.x = centre_x;
           agent.position.y = centre_y;
           agent.angle = dist(gen) * 2 * M_PI;
-          agent.species_mask = {1.0, 0.6, 0.0, 1.0};
+          uint32_t species_number = species_dist(gen);
+          agent.species_mask = generate_species_mask(species_number);
+          agent.species_colour = glm::vec4(species_colours.at(species_number - 1), 1.0);
         }
       } break;
     }
