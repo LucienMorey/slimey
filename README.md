@@ -29,15 +29,17 @@ git submodule update --init --recursive
 ### Dependencies
 
 ``` bash
-
-libgl1-mesa-dev
-libglew-dev
-libwayland-dev
-libxkbcommon-dev
-libxrandr-dev
-libxinerama-dev
-libxcursor-dev
-libxi-dev
+sudo apt install -y \
+  libgl1-mesa-dev \
+  libglew-dev \
+  libglm-dev \
+  libwayland-dev \
+  libxkbcommon-dev \
+  libxrandr-dev \
+  libxinerama-dev \
+  libxcursor-dev \
+  libxi-dev \
+  libglfw3-dev
 
 ```
 

@@ -4,9 +4,8 @@ project(slimey)
 
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
-
-add_subdirectory(lib/glfw)
-add_subdirectory(lib/glm)
+find_package(glfw3 REQUIRED)
+find_package(glm REQUIRED)
 
 add_compile_options(-Wall -Wextra -Wpedantic -std=c++20)
 
