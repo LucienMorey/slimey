@@ -40,18 +40,18 @@ constexpr SpawnMode SPAWN_MODE = SpawnMode::CIRCULAR;
 
 // agent parameters
 constexpr Slimey::AgentSettings agent_settings{
-  .linear_speed = 30.0,
-  .angular_speed = M_PI / 3.0,
+  .linear_speed = 30.0f,
+  .angular_speed = std::numbers::pi_v<float> / 3.0,
   .sensor_radius = 1,
-  .sensor_look_ahead = 35.0,
-  .sensor_offset = M_PI / 3.0};
+  .sensor_look_ahead = 35.0f,
+  .sensor_offset = std::numbers::pi_v<float> / 3.0};
 
 // The colour and number of species is defined here. the colour mode is rgb. There cannot be more than 4 species
 const std::vector<glm::vec3> SPECIES_COLOURS = {{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}};
 
 // trail parameters
 constexpr Slimey::TrailSettings trail_settings = {
-  .evaporation_rate = 0.3, .diffuse_weight = 0.08, .diffuse_radius = 1};
+  .evaporation_rate = 0.3f, .diffuse_weight = 0.08f, .diffuse_radius = 1.0f};
 
 int main()
 {

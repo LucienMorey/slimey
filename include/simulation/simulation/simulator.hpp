@@ -3,10 +3,12 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cmath>
 #include <gl_wrapper/buffer.hpp>
 #include <gl_wrapper/shader_program.hpp>
 #include <gl_wrapper/texture2d32f.hpp>
 #include <glm/vec3.hpp>
+#include <numbers>
 #include <random>
 #include <simulation/agent.hpp>
 #include <string>
@@ -78,7 +80,7 @@ public:
     trail_program_.set_uniform_1f(
       "trail_settings.evaporation_rate", trail_settings.evaporation_rate);
     trail_program_.set_uniform_1f("trail_settings.diffuse_weight", trail_settings.diffuse_weight);
-    trail_program_.set_uniform_1i("trail_settings.diffuse_radius", trail_settings.diffuse_radius);
+    trail_program_.set_uniform_1f("trail_settings.diffuse_radius", trail_settings.diffuse_radius);
 
     initialised_ = true;
 
@@ -137,49 +139,49 @@ private:
     // generate agents
     std::random_device dev;
     std::mt19937 gen(dev());
-    std::uniform_real_distribution<double> dist(0.0, 1.0);
+    std::uniform_real_distribution<float> dist(0.0f, 1.0f);
     std::uniform_int_distribution<uint32_t> species_dist(1, species_colours.size());
     switch (spawn_mode) {
       case SpawnMode::FILL: {
         for (auto & agent : agents_) {
           agent.position.x = dist(gen) * width;
           agent.position.y = dist(gen) * height;
-          agent.angle = dist(gen) * 2 * M_PI;
+          agent.angle = dist(gen) * 2 * std::numbers::pi_v<float>;
           uint32_t species_number = species_dist(gen);
           agent.species_mask = generate_species_mask(species_number);
-          agent.species_colour = glm::vec4(species_colours.at(species_number - 1), 1.0);
+          agent.species_colour = glm::vec4(species_colours.at(species_number - 1), 1.0f);
         }
       } break;
 
       case SpawnMode::CIRCULAR: {
-        float centre_x = width_ / 2.0;
-        float centre_y = height_ / 2.0;
-        float max_radius = 0.75 * std::min(centre_x, centre_y);
+        float centre_x = static_cast<float>(width_) / 2.0f;
+        float centre_y = static_cast<float>(height_) / 2.0f;
+        float max_radius = 0.75f * std::min(centre_x, centre_y);
 
         for (auto & agent : agents_) {
-          float theta = dist(gen) * 2 * M_PI;
+          float theta = dist(gen) * 2 * std::numbers::pi_v<float>;
           float radius = dist(gen) * max_radius;
 
-          agent.position.x = centre_x + radius * cos(theta);
-          agent.position.y = centre_y + radius * sin(theta);
-          agent.angle = dist(gen) * 2 * M_PI;
+          agent.position.x = centre_x + radius * std::cos(theta);
+          agent.position.y = centre_y + radius * std::sin(theta);
+          agent.angle = dist(gen) * 2 * std::numbers::pi_v<float>;
           uint32_t species_number = species_dist(gen);
           agent.species_mask = generate_species_mask(species_number);
-          agent.species_colour = glm::vec4(species_colours.at(species_number - 1), 1.0);
+          agent.species_colour = glm::vec4(species_colours.at(species_number - 1), 1.0f);
         }
       } break;
 
       case SpawnMode::CENTRE: {
-        float centre_x = width_ / 2.0;
-        float centre_y = height_ / 2.0;
+        float centre_x = static_cast<float>(width_) / 2.0f;
+        float centre_y = static_cast<float>(height_) / 2.0f;
 
         for (auto & agent : agents_) {
           agent.position.x = centre_x;
           agent.position.y = centre_y;
-          agent.angle = dist(gen) * 2 * M_PI;
+          agent.angle = dist(gen) * 2 * std::numbers::pi_v<float>;
           uint32_t species_number = species_dist(gen);
           agent.species_mask = generate_species_mask(species_number);
-          agent.species_colour = glm::vec4(species_colours.at(species_number - 1), 1.0);
+          agent.species_colour = glm::vec4(species_colours.at(species_number - 1), 1.0f);
         }
       } break;
     }

@@ -33,7 +33,7 @@ macro(register_gcc_flags target_name)
     -Woverloaded-virtual
     -Wduplicated-cond
     -Wlogical-op
-    # -Wconversion
+    -Wconversion
     -Wformat
     -Wformat=2
     -Wimplicit-fallthrough=5
