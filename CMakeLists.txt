@@ -7,20 +7,23 @@ find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
 
-add_compile_options(-Wall -Wextra -Wpedantic -std=c++20)
+include(cmake/register_gcc_flags.cmake)
 
 add_library(gl_wrapper INTERFACE)
 target_include_directories(gl_wrapper INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include/gl_wrapper)
 target_link_libraries(gl_wrapper INTERFACE GLEW::GLEW OpenGL::GL)
+register_gcc_flags(gl_wrapper)
 
 add_library(simulation INTERFACE)
 target_include_directories(simulation INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include/simulation)
 target_link_libraries(simulation INTERFACE glm::glm)
+register_gcc_flags(simulation)
 
 add_executable(slimey src/main.cpp)
 
 target_link_libraries(slimey PRIVATE glfw GLEW::GLEW OpenGL::GL glm::glm)
 target_link_libraries(slimey PRIVATE gl_wrapper simulation)
+register_gcc_flags(slimey)
 
 add_custom_command(
   TARGET slimey POST_BUILD

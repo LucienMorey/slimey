@@ -49,7 +49,8 @@ public:
     for (const auto & element : elements_) {
       glEnableVertexAttribArray(index);
       glVertexAttribPointer(
-        index, element.count, element.type, element.normalised, stride_, (void *)offset);
+        index, element.count, element.type, element.normalised, stride_,
+        reinterpret_cast<void *>(offset));
       offset += element.count * VertexBufferElement::get_size_of_type(element.type);
       index++;
     }
